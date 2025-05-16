@@ -27,16 +27,16 @@ const FinancialSummary = () => {
         <CardTitle className="text-lg font-medium">Resumo Financeiro</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Added bottom padding to ensure proper spacing */}
-        <div className={`${isMobile ? 'h-[160px]' : 'h-[180px]'} mt-4 mb-6`}>
+        {/* Reduced height for chart container to prevent overflow */}
+        <div className={`${isMobile ? 'h-[140px]' : 'h-[160px]'} mt-2`}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
               margin={{
-                top: 10,
-                right: 10,
+                top: 5,
+                right: 5,
                 left: 0,
-                bottom: isMobile ? 10 : 20,
+                bottom: isMobile ? 5 : 10,
               }}
             >
               <defs>
@@ -50,10 +50,12 @@ const FinancialSummary = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+              <XAxis dataKey="name" tick={{ fontSize: 9 }} />
               <YAxis 
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 9 }}
                 tickFormatter={(value) => `R$${value}`}
+                // Reduce number of ticks to save vertical space
+                ticks={[0, 1, 2]}
               />
               <Tooltip 
                 formatter={(value) => [`R$ ${value}`, undefined]}
@@ -80,8 +82,8 @@ const FinancialSummary = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        {/* Added proper spacing between chart and cards */}
-        <div className="mt-2 grid grid-cols-2 gap-4 text-center">
+        {/* Added better spacing between chart and cards */}
+        <div className="mt-3 grid grid-cols-2 gap-4 text-center">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Receita Total</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
