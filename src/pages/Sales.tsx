@@ -91,6 +91,8 @@ const formSchema = z.object({
   ),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 const Sales = () => {
   useEffect(() => {
     document.title = "Vendas | BelleCharm";
@@ -168,7 +170,7 @@ const Sales = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [saleToEdit, setSaleToEdit] = useState<Sale | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       orderNumber: "",
@@ -259,19 +261,27 @@ const Sales = () => {
     setEditDialogOpen(true);
   };
 
-  const handleEditSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleEditSubmit = (values: FormValues) => {
     if (saleToEdit) {
-      setSales(
-        sales.map((sale) =>
-          sale.id === saleToEdit.id
-            ? {
-                ...sale,
-                ...values,
-                total: values.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-              }
-            : sale
-        )
+      // Ensure items have the correct non-optional type
+      const updatedItems = values.items.map(item => ({
+        product: item.product,
+        quantity: item.quantity,
+        price: item.price
+      }));
+      
+      const updatedSales = sales.map((sale) =>
+        sale.id === saleToEdit.id
+          ? {
+              ...sale,
+              ...values,
+              items: updatedItems,
+              total: updatedItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+            }
+          : sale
       );
+      
+      setSales(updatedSales);
       setEditDialogOpen(false);
       setSaleToEdit(null);
       toast.success(`Pedido ${values.orderNumber} atualizado com sucesso`);
@@ -297,7 +307,6 @@ const Sales = () => {
   };
 
   const renderItemFields = () => {
-    const { fields } = form.getValues();
     return form.watch("items").map((_, index) => (
       <div key={index} className="space-y-4 p-4 border rounded-md">
         <div className="flex justify-between items-center">

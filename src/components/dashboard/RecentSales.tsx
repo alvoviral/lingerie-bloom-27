@@ -8,7 +8,23 @@ import { useState } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-const salesData: any[] = []; // Empty array since there are no real sales yet
+interface SaleItem {
+  product: string;
+  quantity: number;
+  price: number;
+}
+
+interface Sale {
+  id: string;
+  customer: string;
+  product: string;
+  status: string;
+  marketplace: string;
+  amount: string;
+  date: string;
+}
+
+const salesData: Sale[] = []; // Empty array since there are no real sales yet
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -32,6 +48,7 @@ const getMarketplaceColor = (marketplace: string) => {
     case "Mercado Livre":
       return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300";
     case "Loja Própria":
+    case "Site Próprio":
       return "bg-lingerie-100 text-lingerie-800 dark:bg-lingerie-900/20 dark:text-lingerie-300";
     case "Magazine Luiza":
       return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300";
