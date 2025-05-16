@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ExportOptionsForm from "@/components/dashboard/ExportOptionsForm";
 import { useState } from "react";
-import { exportData, ExportFormat } from "@/utils/export";
+import { exportData, ExportFormat, ExportSection } from "@/utils/export";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 
@@ -25,7 +25,7 @@ const ExportDialog = ({ isOpen, onClose }: ExportDialogProps) => {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      await exportData(exportFormat, "dashboard-data");
+      await exportData(exportFormat, "dashboard" as ExportSection);
       toast.success("Dados exportados com sucesso!");
       onClose();
     } catch (error) {
