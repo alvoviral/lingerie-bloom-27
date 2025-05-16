@@ -11,23 +11,31 @@ import { Appointment } from "@/types/calendar";
 
 interface AppointmentDialogProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  selectedDate: Date;
-  onSubmit: (values: AppointmentFormValues) => void;
+  onClose: () => void;
+  onCreate: (values: AppointmentFormValues) => void;
+  onUpdate: (values: AppointmentFormValues) => void;
   appointment: Appointment | null;
+  isEditing: boolean;
 }
 
 const AppointmentDialog = ({ 
   isOpen, 
-  onOpenChange, 
-  selectedDate, 
-  onSubmit, 
-  appointment 
+  onClose, 
+  onCreate,
+  onUpdate,
+  appointment,
+  isEditing
 }: AppointmentDialogProps) => {
-  const isEditing = !!appointment;
+  const handleSubmit = (values: AppointmentFormValues) => {
+    if (isEditing && appointment) {
+      onUpdate(values);
+    } else {
+      onCreate(values);
+    }
+  };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Editar Compromisso' : 'Novo Compromisso'}</DialogTitle>
@@ -39,8 +47,8 @@ const AppointmentDialog = ({
           </DialogDescription>
         </DialogHeader>
         <AppointmentForm 
-          selectedDate={selectedDate} 
-          onSubmit={onSubmit} 
+          selectedDate={isEditing && appointment ? new Date(appointment.date) : new Date()} 
+          onSubmit={handleSubmit} 
           appointment={appointment}
         />
       </DialogContent>

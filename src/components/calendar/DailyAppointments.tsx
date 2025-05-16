@@ -4,22 +4,29 @@ import { pt } from "date-fns/locale";
 import { CalendarIcon, Clock, User, Plus, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Appointment } from "@/types/calendar";
+import { addDays, isSameDay } from "date-fns";
 
 interface DailyAppointmentsProps {
   selectedDate: Date;
   appointments: Appointment[];
-  onNewAppointment: () => void;
-  onEditAppointment: (appointment: Appointment) => void;
-  onDeleteAppointment: (id: string) => void;
+  onNewAppointment?: () => void;
+  onEdit: (appointment: Appointment) => void;
+  onDelete: (appointment: Appointment) => void;
 }
 
 const DailyAppointments = ({ 
   selectedDate, 
   appointments, 
   onNewAppointment,
-  onEditAppointment,
-  onDeleteAppointment,
+  onEdit,
+  onDelete,
 }: DailyAppointmentsProps) => {
+  // Filter appointments for the selected date
+  const dailyAppointments = appointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.date);
+    return isSameDay(appointmentDate, selectedDate);
+  });
+  
   return (
     <div className="space-y-4">
       <div className="text-xl flex items-center">
@@ -27,9 +34,9 @@ const DailyAppointments = ({
         {format(selectedDate, "d 'de' MMMM", { locale: pt })}
       </div>
       
-      {appointments.length > 0 ? (
+      {dailyAppointments.length > 0 ? (
         <div className="space-y-4">
-          {appointments.map(apt => (
+          {dailyAppointments.map(apt => (
             <div key={apt.id} className="border rounded-lg p-3 hover:bg-accent/50">
               <div className="flex justify-between items-start">
                 <h4 className="font-medium">{apt.title}</h4>
@@ -37,7 +44,7 @@ const DailyAppointments = ({
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={() => onEditAppointment(apt)}
+                    onClick={() => onEdit(apt)}
                     className="h-8 w-8"
                   >
                     <Edit className="h-4 w-4" />
@@ -46,7 +53,7 @@ const DailyAppointments = ({
                   <Button 
                     variant="ghost" 
                     size="icon"
-                    onClick={() => onDeleteAppointment(apt.id)}
+                    onClick={() => onDelete(apt)}
                     className="h-8 w-8 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -69,10 +76,12 @@ const DailyAppointments = ({
       ) : (
         <div className="text-center py-8 text-muted-foreground">
           <p>Nenhum compromisso para esta data</p>
-          <Button variant="outline" className="mt-2" onClick={onNewAppointment}>
-            <Plus className="mr-2 h-4 w-4" />
-            Adicionar
-          </Button>
+          {onNewAppointment && (
+            <Button variant="outline" className="mt-2" onClick={onNewAppointment}>
+              <Plus className="mr-2 h-4 w-4" />
+              Adicionar
+            </Button>
+          )}
         </div>
       )}
     </div>

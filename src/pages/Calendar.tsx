@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -83,8 +84,11 @@ const Calendar = () => {
   const handleCreateAppointment = (values: AppointmentFormValues) => {
     const newAppointment: Appointment = {
       id: uuidv4(),
-      ...values,
-      date: format(new Date(values.date), "yyyy-MM-dd"), // Format the date to yyyy-MM-dd
+      title: values.title,
+      client: values.client,
+      date: format(new Date(values.date), "yyyy-MM-dd"),
+      time: values.time,
+      notes: values.notes,
     };
     setAppointments([...appointments, newAppointment]);
     closeAppointmentDialog();
@@ -101,7 +105,14 @@ const Calendar = () => {
 
     const updatedAppointments = appointments.map((appointment) =>
       appointment.id === selectedAppointment.id
-        ? { ...appointment, ...values, date: format(new Date(values.date), "yyyy-MM-dd") }
+        ? { 
+            ...appointment, 
+            title: values.title,
+            client: values.client,
+            date: format(new Date(values.date), "yyyy-MM-dd"),
+            time: values.time,
+            notes: values.notes,
+          }
         : appointment
     );
     setAppointments(updatedAppointments);
@@ -168,6 +179,7 @@ const Calendar = () => {
                 appointments={appointments}
                 onEdit={handleEditAppointment}
                 onDelete={handleDeleteAppointment}
+                onNewAppointment={openAppointmentDialog}
               />
             </div>
           </div>
