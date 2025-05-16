@@ -23,15 +23,15 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/relatorios" element={<Reports />} />
-            <Route path="/agenda" element={<Calendar />} />
-            <Route path="/clientes" element={<Customers />} />
-            <Route path="/inventario" element={<Inventory />} />
-            <Route path="/vendas" element={<Sales />} />
-            <Route path="/financeiro" element={<Finance />} />
-            <Route path="/marketplaces" element={<Marketplaces />} />
-            <Route path="/whatsapp" element={<Whatsapp />} />
-            <Route path="/configuracoes" element={<Settings />} />
+            <Route path="/dashboard/relatorios" element={<Reports />} />
+            <Route path="/dashboard/agenda" element={<Calendar />} />
+            <Route path="/dashboard/clientes" element={<Customers />} />
+            <Route path="/dashboard/estoque" element={<Inventory />} />
+            <Route path="/dashboard/vendas" element={<Sales />} />
+            <Route path="/dashboard/financas" element={<Finance />} />
+            <Route path="/dashboard/marketplaces" element={<Marketplaces />} />
+            <Route path="/dashboard/whatsapp" element={<Whatsapp />} />
+            <Route path="/dashboard/configuracoes" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster position="top-right" />
