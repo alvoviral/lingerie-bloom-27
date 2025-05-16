@@ -12,7 +12,7 @@ import Marketplaces from './pages/Marketplaces';
 import Whatsapp from './pages/Whatsapp';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ThemeProvider } from "./components/ui/theme-provider";
 import { NotificationProvider } from "./contexts/NotificationContext";
 
 function App() {
