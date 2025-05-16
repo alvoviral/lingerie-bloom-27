@@ -10,7 +10,6 @@ import Customers from './pages/Customers';
 import Finance from './pages/Finance';
 import Marketplaces from './pages/Marketplaces';
 import Calendar from './pages/Calendar';
-import Whatsapp from './pages/Whatsapp';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
@@ -69,11 +68,6 @@ function App() {
                   <Route path="/dashboard/agenda" element={
                     <ProtectedRoute>
                       <Calendar />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/dashboard/whatsapp" element={
-                    <ProtectedRoute>
-                      <Whatsapp />
                     </ProtectedRoute>
                   } />
                   <Route path="/dashboard/relatorios" element={
