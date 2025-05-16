@@ -22,6 +22,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
   const navigate = useNavigate();
 
   // Create form with react-hook-form and zod validation
@@ -43,19 +44,6 @@ const Login = () => {
     };
     
     checkSession();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session) {
-          navigate('/dashboard');
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [navigate]);
 
   const handleLogin = async (values: LoginValues) => {
@@ -78,7 +66,7 @@ const Login = () => {
       
       // Handle specific error messages
       if (error.message.includes("Invalid login credentials")) {
-        toast.error("Email ou senha incorretos");
+        toast.error("Email ou senha incorretos. Você já tem cadastro? Se não, clique em Cadastrar.");
       } else if (error.message.includes("Email not confirmed")) {
         toast.error("Por favor, confirme seu email antes de fazer login");
       } else {
@@ -107,7 +95,8 @@ const Login = () => {
           data: {
             first_name: "",
             last_name: ""
-          }
+          },
+          emailRedirectTo: window.location.origin + '/dashboard'
         }
       });
       
@@ -115,19 +104,29 @@ const Login = () => {
         throw error;
       }
       
-      toast.success("Cadastro realizado com sucesso! Verifique seu email para confirmar.");
+      if (data.user && data.session) {
+        toast.success("Cadastro e login realizados com sucesso!");
+        navigate('/dashboard');
+      } else {
+        toast.success("Cadastro realizado! Verifique seu email para confirmar.");
+      }
     } catch (error: any) {
       console.error("Erro ao fazer cadastro:", error);
       
       // Handle specific error messages
       if (error.message.includes("User already registered")) {
-        toast.error("Este email já está cadastrado");
+        toast.error("Este email já está cadastrado. Tente fazer login.");
+        setMode('login');
       } else {
         toast.error(error.message || "Erro ao criar conta");
       }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setMode(mode === 'login' ? 'signup' : 'login');
   };
 
   return (
@@ -156,7 +155,7 @@ const Login = () => {
         </div>
         
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(mode === 'login' ? handleLogin : handleSignUp)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
@@ -209,26 +208,26 @@ const Login = () => {
               )}
             />
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-4">
               <Button 
                 type="submit" 
-                className="flex-1 bg-lingerie-500 hover:bg-lingerie-600 text-white font-montserrat py-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                className="w-full bg-lingerie-500 hover:bg-lingerie-600 text-white font-montserrat py-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                 disabled={isLoading}
               >
                 <Sparkles className="h-5 w-5" />
-                {isLoading ? "Entrando..." : "Entrar"}
+                {isLoading ? "Processando..." : (mode === 'login' ? "Entrar" : "Cadastrar")}
               </Button>
               
-              <Button 
-                type="button"
-                variant="outline"
-                className="flex-1 border-lingerie-300 text-lingerie-600 hover:bg-lingerie-100 font-montserrat py-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                onClick={handleSignUp}
-                disabled={isLoading}
-              >
-                <Heart className="h-5 w-5" />
-                {isLoading ? "Processando..." : "Cadastrar"}
-              </Button>
+              <div className="text-center">
+                <button 
+                  type="button"
+                  className="text-sm text-lingerie-600 hover:text-lingerie-800 underline underline-offset-4 font-montserrat transition-colors"
+                  onClick={toggleMode}
+                  disabled={isLoading}
+                >
+                  {mode === 'login' ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
+                </button>
+              </div>
             </div>
             
             <div className="text-center mt-6">
