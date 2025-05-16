@@ -18,20 +18,20 @@ export const MarketplaceChart = () => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-16">
-      <CardHeader className="pb-0">
+    <Card className="mb-4">
+      <CardHeader className="pb-0 pt-4">
         <CardTitle>Vendas por Marketplace</CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
+      <CardContent className="pb-3 pt-2">
         <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-          <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-52'}`}>
+          <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-64'}`}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart
                 margin={{
-                  top: 0,
-                  right: 0,
-                  left: 0,
-                  bottom: 0,
+                  top: 10,
+                  right: 10,
+                  left: 10,
+                  bottom: 10,
                 }}
               >
                 <Pie
@@ -39,7 +39,7 @@ export const MarketplaceChart = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={isMobile ? 50 : 60}
+                  outerRadius={isMobile ? 60 : 80}
                   fill="#8884d8"
                   dataKey="value"
                   label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -54,9 +54,9 @@ export const MarketplaceChart = () => {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className={`${isMobile ? 'w-full mt-2' : 'w-1/2'}`}>
-            <h4 className="text-sm font-medium mb-2">Distribuição por canais de venda</h4>
-            <div className="space-y-1">
+          <div className={`${isMobile ? 'w-full mt-2' : 'w-1/2 pl-4'}`}>
+            <h4 className="text-sm font-medium mb-3">Distribuição por canais de venda</h4>
+            <div className="space-y-2">
               {marketplaceData.map((item, index) => (
                 <div key={`legend-${index}`} className="flex items-center justify-between">
                   <div className="flex items-center">

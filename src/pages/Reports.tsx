@@ -25,7 +25,7 @@ const Reports = () => {
             subtitle="Analise dados e métricas do seu negócio." 
           />
           
-          <div className="mt-8 space-y-10">
+          <div className="mt-6 space-y-8">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-medium">Visão Geral do Negócio</h3>
               <TimeframeSelector />
@@ -35,9 +35,9 @@ const Reports = () => {
             
             <ReportTabs />
             
-            <Separator className="my-8" />
+            <Separator className="my-6" />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <ScheduledReportsCard />
               <AvailableReportsCard />
             </div>

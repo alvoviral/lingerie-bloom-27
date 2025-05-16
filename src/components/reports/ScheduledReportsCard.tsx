@@ -5,14 +5,14 @@ import { Clock } from "lucide-react";
 export const ScheduledReportsCard = () => {
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 pt-4">
         <CardTitle className="flex items-center text-xl">
           <Clock className="mr-2 h-5 w-5" />
           Relatórios Agendados
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="border rounded-lg p-3 hover:bg-accent/50 cursor-pointer">
             <h4 className="font-medium">Relatório Mensal de Vendas</h4>
             <p className="text-sm text-muted-foreground mt-1">

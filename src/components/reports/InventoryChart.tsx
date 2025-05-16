@@ -24,12 +24,12 @@ export const InventoryChart = () => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-6">
-      <CardHeader className="pb-0">
+    <Card className="mb-4">
+      <CardHeader className="pb-0 pt-4">
         <CardTitle>Estoque vs. Vendas</CardTitle>
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className={`${isMobile ? 'h-52' : 'h-64'} w-full relative`}>
+      <CardContent className="pb-3 pt-2">
+        <div className={`${isMobile ? 'h-56' : 'h-72'} w-full relative`}>
           <ChartContainer
             config={{
               estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
@@ -39,19 +39,20 @@ export const InventoryChart = () => {
             <BarChart 
               data={inventoryData}
               margin={{
-                top: 10,
+                top: 15,
                 right: 20,
                 left: 20,
-                bottom: 10,
+                bottom: 15,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 14 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} padding={{ left: 10, right: 10 }} />
               <YAxis 
-                tick={{ fontSize: 14 }}
+                tick={{ fontSize: 12 }}
                 ticks={[0, 1]}
+                width={40}
               />
-              <Legend wrapperStyle={{ paddingTop: 8, fontSize: 14, bottom: 0 }} />
+              <Legend wrapperStyle={{ paddingTop: 10, fontSize: 12, bottom: 0 }} />
               <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
             </BarChart>
