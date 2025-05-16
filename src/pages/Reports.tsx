@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -73,7 +72,7 @@ const inventoryData = [
   { month: 'Jun', estoque: 0, vendas: 0 },
   { month: 'Jul', estoque: 0, vendas: 0 },
   { month: 'Ago', estoque: 0, vendas: 0 },
-  { month: 'Set', estoque: 0, vendas: 0 },
+  { month: 'Set', value: 0, vendas: 0 },
   { month: 'Out', estoque: 0, vendas: 0 },
   { month: 'Nov', estoque: 0, vendas: 0 },
   { month: 'Dez', estoque: 0, vendas: 0 },
@@ -162,28 +161,36 @@ const Reports = () => {
                 <TabsTrigger value="estoque">Estoque</TabsTrigger>
               </TabsList>
               
-              {/* Reduced chart heights and adjusted margins */}
-              <TabsContent value="vendas" className="mt-4 mb-10">
+              {/* Further reduced chart heights and adjusted margins for all tabs */}
+              <TabsContent value="vendas" className="mt-4">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle>Gráfico de Vendas</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    {/* Significantly reduced chart height to prevent overflow */}
-                    <div className={`${isMobile ? 'h-48' : 'h-52'} mt-1`}>
+                    {/* Further reduced chart height to prevent overflow */}
+                    <div className={`${isMobile ? 'h-40' : 'h-44'} mt-1`}>
                       <ChartContainer
                         config={{
                           sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
                           tooltip: { theme: { light: "#ec4899", dark: "#ec4899" } },
                         }}
                       >
-                        <LineChart data={salesData}>
+                        <LineChart 
+                          data={salesData}
+                          margin={{
+                            top: 5,
+                            right: 5,
+                            left: 0,
+                            bottom: isMobile ? 0 : 5,
+                          }}
+                        >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="month" />
+                          <XAxis dataKey="month" tick={{ fontSize: 8 }} />
                           <YAxis 
                             tickFormatter={(value) => `R$ ${value.toLocaleString()}`}
-                            // Reduce the number of ticks to save space
-                            ticks={[0, 1, 2]}
+                            tick={{ fontSize: 8 }}
+                            ticks={[0, 1]}
                           />
                           <Tooltip 
                             content={({ active, payload }) => {
@@ -214,15 +221,15 @@ const Reports = () => {
                               return null;
                             }}
                           />
-                          <Legend wrapperStyle={{ marginTop: -5, paddingBottom: 0 }} />
+                          <Legend wrapperStyle={{ paddingTop: 0, marginTop: -5, fontSize: 8 }} />
                           <Line
                             type="monotone"
                             dataKey="value"
                             name="Vendas (R$)"
                             stroke="#ec4899"
                             strokeWidth={2}
-                            dot={{ r: 3, strokeWidth: 2 }}
-                            activeDot={{ r: 5, stroke: "#ec4899", strokeWidth: 2 }}
+                            dot={{ r: 2, strokeWidth: 2 }}
+                            activeDot={{ r: 4, stroke: "#ec4899", strokeWidth: 2 }}
                           />
                         </LineChart>
                       </ChartContainer>
@@ -231,23 +238,30 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              {/* Adjusted other tab content heights and margins similarly */}
-              <TabsContent value="categorias" className="mt-4 mb-10">
+              {/* Adjusted other tab content heights similarly */}
+              <TabsContent value="categorias" className="mt-4">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle>Vendas por Categoria</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-52'}`}>
+                      <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-44'}`}>
                         <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
+                          <PieChart 
+                            margin={{
+                              top: 0,
+                              right: 0,
+                              left: 0,
+                              bottom: 0,
+                            }}
+                          >
                             <Pie
                               data={categoryData}
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              outerRadius={isMobile ? 60 : 70}
+                              outerRadius={isMobile ? 50 : 60}
                               fill="#8884d8"
                               dataKey="value"
                               label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -284,22 +298,29 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="marketplaces" className="mt-4 mb-10">
+              <TabsContent value="marketplaces" className="mt-4">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle>Vendas por Marketplace</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-52'}`}>
+                      <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-44'}`}>
                         <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
+                          <PieChart
+                            margin={{
+                              top: 0,
+                              right: 0,
+                              left: 0,
+                              bottom: 0,
+                            }}
+                          >
                             <Pie
                               data={marketplaceData}
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              outerRadius={isMobile ? 60 : 70}
+                              outerRadius={isMobile ? 50 : 60}
                               fill="#8884d8"
                               dataKey="value"
                               label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -336,29 +357,37 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="estoque" className="mt-4 mb-10">
+              <TabsContent value="estoque" className="mt-4">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle>Estoque vs. Vendas</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    {/* Significantly reduced chart height to prevent overflow */}
-                    <div className={`${isMobile ? 'h-48' : 'h-52'} mt-1`}>
+                    {/* Further reduced chart height to prevent overflow */}
+                    <div className={`${isMobile ? 'h-40' : 'h-44'} mt-1`}>
                       <ChartContainer
                         config={{
                           estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
                           vendas: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
                         }}
                       >
-                        <BarChart data={inventoryData}>
+                        <BarChart 
+                          data={inventoryData}
+                          margin={{
+                            top: 5,
+                            right: 5,
+                            left: 0,
+                            bottom: isMobile ? 0 : 5,
+                          }}
+                        >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="month" />
+                          <XAxis dataKey="month" tick={{ fontSize: 8 }} />
                           <YAxis 
-                            // Reduce the number of ticks to save space
-                            ticks={[0, 1, 2, 3]}
+                            tick={{ fontSize: 8 }}
+                            ticks={[0, 1]}
                           />
                           <Tooltip />
-                          <Legend wrapperStyle={{ marginTop: -5, paddingBottom: 0 }} />
+                          <Legend wrapperStyle={{ marginTop: -5, paddingBottom: 0, fontSize: 8 }} />
                           <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                           <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
                         </BarChart>
@@ -369,8 +398,8 @@ const Reports = () => {
               </TabsContent>
             </Tabs>
             
-            {/* Increased top margin to provide more space between charts and these cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 mb-10">
+            {/* Significantly increased margin-top to create more separation between charts and cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 mb-10">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
