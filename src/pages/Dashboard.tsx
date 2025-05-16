@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -24,13 +25,14 @@ const Dashboard = () => {
       
       <div className="flex-1 overflow-auto">
         <div className="p-6 md:p-8">
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-5">
             <Header 
               title="Dashboard" 
               subtitle="Bem-vinda de volta! Aqui está o resumo do seu negócio hoje." 
+              className="border-none pb-0"
             />
             
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="flex items-center gap-2 self-start sm:self-center">
               <Button
                 onClick={() => setIsCalculatorOpen(true)}
                 variant="outline"
@@ -94,7 +96,7 @@ const Dashboard = () => {
             <RecentSales />
           </div>
 
-          {/* Mobile buttons */}
+          {/* Mobile buttons - hidden on larger screens */}
           <div className="mt-6 sm:hidden grid grid-cols-2 gap-4">
             <Button
               onClick={() => setIsCalculatorOpen(true)}

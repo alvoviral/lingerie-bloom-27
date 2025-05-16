@@ -24,9 +24,10 @@ import { toast } from "sonner";
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  className?: string;
 }
 
-const Header = ({ title, subtitle }: HeaderProps) => {
+const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -58,7 +59,7 @@ const Header = ({ title, subtitle }: HeaderProps) => {
   };
 
   return (
-    <div className="border-b pb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+    <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center ${className}`}>
       <div className="mb-4 sm:mb-0">
         <h1 className="text-3xl font-bold font-playfair text-lingerie-800 dark:text-lingerie-200">{title}</h1>
         {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
