@@ -1,9 +1,8 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/dashboard/StatCard";
-import { DollarSign, Download, ShoppingBag, Users, Package, Bell } from "lucide-react";
+import { DollarSign, Download, ShoppingBag, Users, Package, Bell, Search } from "lucide-react";
 import FinancialSummary from "@/components/dashboard/FinancialSummary";
 import InventorySummary from "@/components/dashboard/InventorySummary";
 import RecentSales from "@/components/dashboard/RecentSales";
@@ -26,12 +25,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Input } from "@/components/ui/input";
 
 const Dashboard = () => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     document.title = "Dashboard | BelleCharm";
@@ -75,6 +76,17 @@ const Dashboard = () => {
             </Header>
             
             <div className="flex items-center gap-3">
+              {/* Search input */}
+              <div className="relative w-48 md:w-64">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Pesquisar..."
+                  className="pl-8"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              
               {/* Notifications dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

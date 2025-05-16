@@ -70,14 +70,16 @@ const Header = ({ title, subtitle, className = "", showSearchOnly = false, child
       <div className="flex items-center gap-4">
         {!showSearchOnly && children}
         
-        {/* Search bar */}
-        <div className="relative w-64">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar..."
-            className="pl-8"
-          />
-        </div>
+        {/* The search bar is now removed from the Header component since it's in Dashboard */}
+        {showSearchOnly ? null : (
+          <div className="relative w-64">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Pesquisar..."
+              className="pl-8"
+            />
+          </div>
+        )}
         
         {!showSearchOnly && (
           <>
