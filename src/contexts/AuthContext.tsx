@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 type AuthContextType = {
   session: Session | null;
@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // First set up the auth state listener to prevent deadlocks
@@ -29,9 +30,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
         
         if (event === 'SIGNED_OUT') {
-          navigate('/');
+          navigate('/', { replace: true });
         } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          navigate('/dashboard');
+          // Only navigate if not already on a protected route
+          if (location.pathname === '/' || location.pathname === '/login') {
+            navigate('/dashboard', { replace: true });
+          }
         }
       }
     );
@@ -43,6 +47,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         setSession(initialSession);
         setUser(initialSession?.user ?? null);
+        
+        // Initial redirect if session exists
+        if (initialSession && (location.pathname === '/' || location.pathname === '/login')) {
+          navigate('/dashboard', { replace: true });
+        }
       } catch (error) {
         console.error('Error getting initial session:', error);
       } finally {
@@ -55,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location.pathname]);
   
   const signOut = async () => {
     await supabase.auth.signOut();
