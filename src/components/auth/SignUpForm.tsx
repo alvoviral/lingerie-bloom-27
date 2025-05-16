@@ -51,6 +51,8 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
         return;
       }
       
+      console.log("Iniciando cadastro com:", values.email);
+      
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
@@ -67,6 +69,8 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
       if (error) {
         throw error;
       }
+      
+      console.log("Resultado do cadastro:", data);
       
       if (data.user && data.session) {
         toast.success("Cadastro e login realizados com sucesso!");
