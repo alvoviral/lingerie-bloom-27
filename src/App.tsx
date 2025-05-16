@@ -2,6 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Index from './pages/Index';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Sales from './pages/Sales';
 import Inventory from './pages/Inventory';
@@ -29,6 +30,7 @@ function App() {
             <Router>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/dashboard/vendas" element={<Sales />} />
                 <Route path="/dashboard/estoque" element={<Inventory />} />
