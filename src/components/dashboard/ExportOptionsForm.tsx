@@ -1,7 +1,7 @@
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { FileText, FileSpreadsheet, FileType2, FileWord } from "lucide-react";
+import { FileText, FileSpreadsheet, FileType2, File } from "lucide-react";
 
 interface ExportOptionsFormProps {
   exportFormat: string;
@@ -47,7 +47,7 @@ const ExportOptionsForm = ({
           <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-accent cursor-pointer">
             <RadioGroupItem value="docx" id="docx" />
             <Label htmlFor="docx" className="flex items-center cursor-pointer">
-              <FileWord className="h-5 w-5 mr-2 text-blue-600" />
+              <File className="h-5 w-5 mr-2 text-blue-600" />
               Word (.docx)
             </Label>
           </div>

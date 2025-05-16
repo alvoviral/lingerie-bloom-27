@@ -25,7 +25,7 @@ const ExportDialog = ({ isOpen, onClose }: ExportDialogProps) => {
   const handleExport = async () => {
     try {
       setIsExporting(true);
-      await exportData(exportFormat);
+      await exportData(exportFormat, "dashboard-data");
       toast.success("Dados exportados com sucesso!");
       onClose();
     } catch (error) {
