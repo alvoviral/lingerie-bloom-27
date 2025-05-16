@@ -1,5 +1,5 @@
 
-import { Loader2, RefreshCw, Check, Timer } from "lucide-react";
+import { Loader2, RefreshCw, Check, Timer, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConnectionState } from "./types";
 import { useState, useEffect } from "react";
@@ -35,7 +35,7 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
     };
   }, [qrExpiration, connectionState.status, qrExpired]);
 
-  // Simulating loading of QR Code (in practice, this would be an API call)
+  // Simulating loading of QR Code
   useEffect(() => {
     const loadQrCode = setTimeout(() => {
       setIsLoading(false);
@@ -73,49 +73,74 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
           </div>
         ) : (
           !qrExpired ? (
-            /* Using an SVG QR code similar to what WhatsApp Web actually uses */
+            /* Professional WhatsApp-style QR code display */
             <div className="w-full h-full flex items-center justify-center">
-              <svg 
-                width="200" 
-                height="200" 
-                viewBox="0 0 256 256" 
-                className="w-full h-full" 
-                style={{ backgroundColor: 'white' }}
-              >
-                {/* WhatsApp Web-like QR code pattern */}
-                <rect x="0" y="0" width="256" height="256" fill="white" />
-                <path d="M32,32 L96,32 L96,96 L32,96 Z" fill="black" />
-                <path d="M32,36 L92,36 L92,92 L36,92 L36,36 Z" fill="white" />
-                <path d="M42,42 L86,42 L86,86 L42,86 Z" fill="black" />
+              {/* WhatsApp corners indicator */}
+              <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-green-500"></div>
+              <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-green-500"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-green-500"></div>
+              <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-green-500"></div>
+              
+              {/* WhatsApp logo in the middle */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="bg-white p-3 rounded-lg shadow-sm border">
+                  <QrCode className="h-10 w-10 text-green-500" />
+                </div>
+              </div>
+              
+              {/* Realistic QR Code pattern (the 3x3 position detection patterns) */}
+              <div className="grid grid-cols-6 grid-rows-6 gap-1 w-full h-full p-2">
+                {/* Top-left position detection pattern */}
+                <div className="col-span-1 row-span-1 bg-black"></div>
+                <div className="col-span-1 row-span-1 bg-black"></div>
+                <div className="col-span-1 row-span-1 bg-black"></div>
                 
-                <path d="M160,32 L224,32 L224,96 L160,96 Z" fill="black" />
-                <path d="M160,36 L220,36 L220,92 L160,92 Z" fill="white" />
-                <path d="M166,42 L214,42 L214,86 L166,86 Z" fill="black" />
+                {/* Top-right position detection pattern */}
+                <div className="col-start-4 row-start-1 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-5 row-start-1 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-6 row-start-1 col-span-1 row-span-1 bg-black"></div>
                 
-                <path d="M32,160 L96,160 L96,224 L32,224 Z" fill="black" />
-                <path d="M32,164 L92,164 L92,220 L36,220 L36,164 Z" fill="white" />
-                <path d="M42,170 L86,170 L86,214 L42,214 Z" fill="black" />
+                {/* Second row */}
+                <div className="col-start-1 row-start-2 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-2 row-start-2 col-span-1 row-span-1 bg-white border border-gray-200"></div>
+                <div className="col-start-3 row-start-2 col-span-1 row-span-1 bg-black"></div>
                 
-                {/* WhatsApp logo in center */}
-                <circle cx="128" cy="128" r="18" fill="#25D366" />
-                <path d="M136,124 A12,12 0 1,0 120,132 L122,138 L128,136 A12,12 0 0,0 136,124 Z" fill="white" />
+                <div className="col-start-4 row-start-2 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-5 row-start-2 col-span-1 row-span-1 bg-white border border-gray-200"></div>
+                <div className="col-start-6 row-start-2 col-span-1 row-span-1 bg-black"></div>
                 
-                {/* Random data patterns */}
-                <rect x="112" y="32" width="8" height="8" fill="black" />
-                <rect x="128" y="32" width="8" height="8" fill="black" />
-                <rect x="128" y="48" width="8" height="8" fill="black" />
-                <rect x="112" y="64" width="8" height="8" fill="black" />
-                <rect x="144" y="64" width="8" height="8" fill="black" />
-                <rect x="32" y="112" width="8" height="8" fill="black" />
-                <rect x="48" y="128" width="8" height="8" fill="black" />
-                <rect x="64" y="112" width="8" height="8" fill="black" />
-                <rect x="176" y="112" width="8" height="8" fill="black" />
-                <rect x="192" y="128" width="8" height="8" fill="black" />
-                <rect x="208" y="144" width="8" height="8" fill="black" />
-                <rect x="112" y="176" width="8" height="8" fill="black" />
-                <rect x="128" y="192" width="8" height="8" fill="black" />
-                <rect x="144" y="208" width="8" height="8" fill="black" />
-              </svg>
+                {/* Third row */}
+                <div className="col-start-1 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-2 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-3 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                
+                <div className="col-start-4 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-5 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-6 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                
+                {/* Bottom-left position detection pattern */}
+                <div className="col-start-1 row-start-4 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-2 row-start-4 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-3 row-start-4 col-span-1 row-span-1 bg-black"></div>
+                
+                {/* Second to last row */}
+                <div className="col-start-1 row-start-5 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-2 row-start-5 col-span-1 row-span-1 bg-white border border-gray-200"></div>
+                <div className="col-start-3 row-start-5 col-span-1 row-span-1 bg-black"></div>
+                
+                {/* Last row */}
+                <div className="col-start-1 row-start-6 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-2 row-start-6 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-3 row-start-6 col-span-1 row-span-1 bg-black"></div>
+                
+                {/* Random QR code data points */}
+                <div className="col-start-2 row-start-4 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-4 row-start-3 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-5 row-start-5 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-4 row-start-6 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-6 row-start-4 col-span-1 row-span-1 bg-black"></div>
+                <div className="col-start-5 row-start-2 col-span-1 row-span-1 bg-black"></div>
+              </div>
             </div>
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
