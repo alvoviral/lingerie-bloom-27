@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -26,7 +25,6 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-5">
             <Header 
               title="Dashboard" 
-              subtitle="Bem-vinda de volta! Aqui está o resumo do seu negócio hoje." 
               className="border-none pb-0"
             />
             
