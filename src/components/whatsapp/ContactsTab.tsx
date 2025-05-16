@@ -8,14 +8,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Users, MessageSquare } from "lucide-react";
 import ChatDialog from "./ChatDialog";
 
-import { Customer, ConnectionStatus } from "./types";
+import { Customer, ConnectionState } from "./types";
 
 interface ContactsTabProps {
   customers: Customer[];
-  connectionStatus: ConnectionStatus;
+  connectionState: ConnectionState;
 }
 
-const ContactsTab = ({ customers, connectionStatus }: ContactsTabProps) => {
+const ContactsTab = ({ customers, connectionState }: ContactsTabProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -56,7 +56,7 @@ const ContactsTab = ({ customers, connectionStatus }: ContactsTabProps) => {
               />
             </div>
             
-            <Button disabled={connectionStatus !== "connected"}>
+            <Button disabled={connectionState.status !== "connected"}>
               <Users className="mr-2 h-4 w-4" />
               Importar Contatos
             </Button>
@@ -97,7 +97,7 @@ const ContactsTab = ({ customers, connectionStatus }: ContactsTabProps) => {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          disabled={connectionStatus !== "connected"}
+                          disabled={connectionState.status !== "connected"}
                           onClick={() => handleOpenChat(customer)}
                         >
                           <MessageSquare className="h-4 w-4 mr-2" />
@@ -117,7 +117,7 @@ const ContactsTab = ({ customers, connectionStatus }: ContactsTabProps) => {
         open={chatOpen} 
         onOpenChange={setChatOpen} 
         customer={selectedCustomer} 
-        connectionStatus={connectionStatus}
+        connectionState={connectionState}
       />
     </>
   );

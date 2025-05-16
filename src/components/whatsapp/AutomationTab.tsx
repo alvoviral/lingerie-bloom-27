@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
+import { ConnectionState } from "./types";
 
 interface AutomationItem {
   title: string;
@@ -11,10 +12,10 @@ interface AutomationItem {
 }
 
 interface AutomationTabProps {
-  connectionStatus: "connected" | "disconnected" | "connecting";
+  connectionState: ConnectionState;
 }
 
-const AutomationTab = ({ connectionStatus }: AutomationTabProps) => {
+const AutomationTab = ({ connectionState }: AutomationTabProps) => {
   const automations: AutomationItem[] = [
     {
       title: "Pós-Compra",
@@ -62,7 +63,7 @@ const AutomationTab = ({ connectionStatus }: AutomationTabProps) => {
                   >
                     {automation.active ? "Ativo" : "Inativo"}
                   </Badge>
-                  <Button variant="outline" size="sm" disabled={connectionStatus !== "connected"}>
+                  <Button variant="outline" size="sm" disabled={connectionState.status !== "connected"}>
                     Editar
                   </Button>
                 </div>
@@ -72,7 +73,7 @@ const AutomationTab = ({ connectionStatus }: AutomationTabProps) => {
         </div>
       </CardContent>
       <CardFooter>
-        <Button disabled={connectionStatus !== "connected"}>
+        <Button disabled={connectionState.status !== "connected"}>
           <Plus className="mr-2 h-4 w-4" />
           Nova Automação
         </Button>

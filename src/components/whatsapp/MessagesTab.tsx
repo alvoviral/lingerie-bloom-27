@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,34 +37,16 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export type MessageType = "text" | "image" | "audio";
-
-export interface WhatsAppMessage {
-  id: string;
-  content: string;
-  type: MessageType;
-  receivers: number;
-  status: "Agendada" | "Enviada" | "Falha";
-  scheduledDate?: Date;
-}
-
-export interface Customer {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  lastPurchase?: string;
-  tags: string[];
-}
+import { WhatsAppMessage, Customer, ConnectionState, MessageType } from "./types";
 
 interface MessagesTabProps {
   messages: WhatsAppMessage[];
   customers: Customer[];
-  connectionStatus: "connected" | "disconnected" | "connecting";
+  connectionState: ConnectionState;
   onSendMessage: (message: Omit<WhatsAppMessage, "id" | "receivers" | "status">, recipients: string[]) => void;
 }
 
-const MessagesTab = ({ messages, customers, connectionStatus, onSendMessage }: MessagesTabProps) => {
+const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: MessagesTabProps) => {
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState<{
     content: string;
@@ -94,7 +75,7 @@ const MessagesTab = ({ messages, customers, connectionStatus, onSendMessage }: M
   };
 
   const handleSendMessage = () => {
-    if (connectionStatus !== "connected") {
+    if (connectionState.status !== "connected") {
       toast.error("É necessário conectar ao WhatsApp para enviar mensagens.");
       return;
     }
@@ -135,7 +116,7 @@ const MessagesTab = ({ messages, customers, connectionStatus, onSendMessage }: M
         
         <Dialog>
           <DialogTrigger asChild>
-            <Button disabled={connectionStatus !== "connected"}>
+            <Button disabled={connectionState.status !== "connected"}>
               <Plus className="mr-2 h-4 w-4" /> Nova Mensagem
             </Button>
           </DialogTrigger>
@@ -273,7 +254,7 @@ const MessagesTab = ({ messages, customers, connectionStatus, onSendMessage }: M
             <DialogFooter>
               <Button 
                 onClick={handleSendMessage} 
-                disabled={!newMessage.content || selectedCustomers.length === 0 || connectionStatus !== "connected"}
+                disabled={!newMessage.content || selectedCustomers.length === 0 || connectionState.status !== "connected"}
               >
                 <Send className="mr-2 h-4 w-4" />
                 {newMessage.scheduledDate && newMessage.scheduledDate > new Date() 
@@ -324,7 +305,7 @@ const MessagesTab = ({ messages, customers, connectionStatus, onSendMessage }: M
                     : "Imediato"}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" disabled={connectionStatus !== "connected"}>
+                  <Button variant="ghost" size="sm" disabled={connectionState.status !== "connected"}>
                     Ver Detalhes
                   </Button>
                 </TableCell>

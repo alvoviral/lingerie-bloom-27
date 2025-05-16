@@ -7,16 +7,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Paperclip, Image as ImageIcon, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 
-import { ChatMessage, Customer, ConnectionStatus, MessageType } from "./types";
+import { ChatMessage, Customer, ConnectionState, MessageType } from "./types";
 
 interface ChatInterfaceProps {
   customer: Customer;
   chat: ChatMessage[];
-  connectionStatus: ConnectionStatus;
+  connectionState: ConnectionState;
   onSendMessage: (content: string, type: MessageType) => void;
 }
 
-const ChatInterface = ({ customer, chat, connectionStatus, onSendMessage }: ChatInterfaceProps) => {
+const ChatInterface = ({ customer, chat, connectionState, onSendMessage }: ChatInterfaceProps) => {
   const [newMessage, setNewMessage] = useState("");
   const [attachmentType, setAttachmentType] = useState<MessageType | null>(null);
 
@@ -125,7 +125,7 @@ const ChatInterface = ({ customer, chat, connectionStatus, onSendMessage }: Chat
             <Button
               variant="ghost"
               size="icon"
-              disabled={connectionStatus !== "connected"}
+              disabled={connectionState.status !== "connected"}
             >
               <Paperclip className="h-5 w-5" />
             </Button>
@@ -140,12 +140,12 @@ const ChatInterface = ({ customer, chat, connectionStatus, onSendMessage }: Chat
                   handleSendMessage();
                 }
               }}
-              disabled={connectionStatus !== "connected"}
+              disabled={connectionState.status !== "connected"}
             />
           </div>
           <Button
             onClick={handleSendMessage}
-            disabled={!newMessage.trim() || connectionStatus !== "connected"}
+            disabled={!newMessage.trim() || connectionState.status !== "connected"}
           >
             <Send className="h-4 w-4" />
           </Button>
