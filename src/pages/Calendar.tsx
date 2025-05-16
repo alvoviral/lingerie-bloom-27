@@ -12,11 +12,23 @@ import MonthlyCalendar from "@/components/calendar/MonthlyCalendar";
 import DailyAppointments from "@/components/calendar/DailyAppointments";
 import AppointmentDialog from "@/components/calendar/AppointmentDialog";
 import { AppointmentFormValues } from "@/components/calendar/AppointmentForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
+  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([
     {
       id: "1",
@@ -41,7 +53,25 @@ const Calendar = () => {
   }, []);
 
   const handleNewAppointment = () => {
+    setEditingAppointment(null);
     setIsDialogOpen(true);
+  };
+
+  const handleEditAppointment = (appointment: Appointment) => {
+    setEditingAppointment(appointment);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteAppointment = (id: string) => {
+    setAppointmentToDelete(id);
+  };
+
+  const confirmDelete = () => {
+    if (appointmentToDelete) {
+      setAppointments(appointments.filter(apt => apt.id !== appointmentToDelete));
+      toast.success("Compromisso excluído com sucesso!");
+      setAppointmentToDelete(null);
+    }
   };
 
   const handlePreviousMonth = () => {
@@ -53,19 +83,33 @@ const Calendar = () => {
   };
 
   const onSubmit = (values: AppointmentFormValues) => {
-    // Create a new appointment with required fields defined explicitly
-    const newAppointment: Appointment = {
-      id: Date.now().toString(),
-      title: values.title,
-      client: values.client,
-      date: values.date,
-      time: values.time,
-      notes: values.notes,
-    };
-    
-    setAppointments([...appointments, newAppointment]);
-    setIsDialogOpen(false);
-    toast.success("Compromisso adicionado com sucesso!");
+    if (editingAppointment) {
+      // Editar compromisso existente
+      const updatedAppointments = appointments.map(apt => 
+        apt.id === editingAppointment.id 
+          ? { ...apt, ...values } 
+          : apt
+      );
+      
+      setAppointments(updatedAppointments);
+      setIsDialogOpen(false);
+      setEditingAppointment(null);
+      toast.success("Compromisso atualizado com sucesso!");
+    } else {
+      // Criar novo compromisso
+      const newAppointment: Appointment = {
+        id: Date.now().toString(),
+        title: values.title,
+        client: values.client,
+        date: values.date,
+        time: values.time,
+        notes: values.notes,
+      };
+      
+      setAppointments([...appointments, newAppointment]);
+      setIsDialogOpen(false);
+      toast.success("Compromisso adicionado com sucesso!");
+    }
   };
 
   const selectedDateAppointments = appointments.filter(
@@ -117,6 +161,8 @@ const Calendar = () => {
                     selectedDate={selectedDate}
                     appointments={selectedDateAppointments}
                     onNewAppointment={handleNewAppointment}
+                    onEditAppointment={handleEditAppointment}
+                    onDeleteAppointment={handleDeleteAppointment}
                   />
                 </CardContent>
               </Card>
@@ -130,7 +176,23 @@ const Calendar = () => {
         onOpenChange={setIsDialogOpen}
         selectedDate={selectedDate}
         onSubmit={onSubmit}
+        appointment={editingAppointment}
       />
+
+      <AlertDialog open={!!appointmentToDelete} onOpenChange={() => setAppointmentToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir compromisso</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir este compromisso? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

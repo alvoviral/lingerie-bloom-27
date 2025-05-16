@@ -19,6 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
+import { useEffect } from "react";
 
 // Define validation schema for appointments
 const appointmentFormSchema = z.object({
@@ -34,9 +35,10 @@ export type AppointmentFormValues = z.infer<typeof appointmentFormSchema>;
 interface AppointmentFormProps {
   selectedDate: Date;
   onSubmit: (values: AppointmentFormValues) => void;
+  appointment: Appointment | null;
 }
 
-export const AppointmentForm = ({ selectedDate, onSubmit }: AppointmentFormProps) => {
+export const AppointmentForm = ({ selectedDate, onSubmit, appointment }: AppointmentFormProps) => {
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentFormSchema),
     defaultValues: {
@@ -47,6 +49,27 @@ export const AppointmentForm = ({ selectedDate, onSubmit }: AppointmentFormProps
       notes: "",
     },
   });
+  
+  // Reset form when editing appointment changes
+  useEffect(() => {
+    if (appointment) {
+      form.reset({
+        title: appointment.title,
+        client: appointment.client,
+        date: appointment.date,
+        time: appointment.time,
+        notes: appointment.notes || "",
+      });
+    } else {
+      form.reset({
+        title: "",
+        client: "",
+        date: format(selectedDate, 'yyyy-MM-dd'),
+        time: "",
+        notes: "",
+      });
+    }
+  }, [appointment, selectedDate, form]);
 
   return (
     <Form {...form}>
@@ -122,7 +145,7 @@ export const AppointmentForm = ({ selectedDate, onSubmit }: AppointmentFormProps
           )}
         />
         <DialogFooter>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit">{appointment ? 'Salvar alterações' : 'Salvar'}</Button>
         </DialogFooter>
       </form>
     </Form>
