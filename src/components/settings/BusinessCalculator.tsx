@@ -29,7 +29,7 @@ interface BusinessCalculatorProps {
 }
 
 type CalculationType = 'profit' | 'cost' | 'expenses' | 'revenue';
-type MarketplaceType = 'shopee' | 'mercadolivre' | 'magalu' | 'casasbahia' | 'lojapropia' | '';
+type MarketplaceType = 'shopee' | 'mercadolivre' | 'magalu' | 'casasbahia' | 'lojapropia' | 'custom';
 
 interface MarketplaceConfig {
   name: string;
@@ -80,7 +80,7 @@ const mockProducts: Product[] = [
 
 // Configurações de cada marketplace
 const marketplaceConfigs: Record<MarketplaceType, MarketplaceConfig> = {
-  '': { name: "Personalizado", feePercentage: 0, fixedFee: 0, shippingFee: 0, icon: <Calculator className="h-5 w-5" /> },
+  'custom': { name: "Personalizado", feePercentage: 0, fixedFee: 0, shippingFee: 0, icon: <Calculator className="h-5 w-5" /> },
   'shopee': { name: "Shopee", feePercentage: 18, fixedFee: 2, shippingFee: 15, icon: <Store className="h-5 w-5 text-orange-500" /> },
   'mercadolivre': { name: "Mercado Livre", feePercentage: 16, fixedFee: 5, shippingFee: 20, icon: <Store className="h-5 w-5 text-yellow-500" /> },
   'magalu': { name: "Magazine Luiza", feePercentage: 14, fixedFee: 3, shippingFee: 18, icon: <Store className="h-5 w-5 text-blue-500" /> },
@@ -96,7 +96,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
   const [customCost, setCustomCost] = useState<number>(0);
   const [result, setResult] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [selectedMarketplace, setSelectedMarketplace] = useState<MarketplaceType>('');
+  const [selectedMarketplace, setSelectedMarketplace] = useState<MarketplaceType>('custom');
   const [marketplaceDetails, setMarketplaceDetails] = useState<{
     platformFee: number;
     shippingCost: number;
@@ -300,7 +300,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
                 <SelectValue placeholder="Escolha uma plataforma" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Personalizado</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
                 <SelectItem value="lojapropia">Loja Própria</SelectItem>
                 <SelectItem value="shopee">Shopee</SelectItem>
                 <SelectItem value="mercadolivre">Mercado Livre</SelectItem>
@@ -345,7 +345,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
                 <SelectValue placeholder="Escolha um produto ou personalizar" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Personalizar Valores</SelectItem>
+                <SelectItem value="custom">Personalizar Valores</SelectItem>
                 {mockProducts.map((product) => (
                   <SelectItem key={product.id} value={product.id}>
                     {product.name} - {product.size} ({product.sku})
@@ -369,7 +369,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
             />
           </div>
           
-          {!selectedProduct && (
+          {selectedProduct === "custom" && (
             <>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="price" className="text-right">
@@ -403,7 +403,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
             </>
           )}
           
-          {selectedProduct && (
+          {selectedProduct && selectedProduct !== "custom" && (
             <div className="mt-2">
               <p className="text-sm text-muted-foreground mb-1">Detalhes do Produto Selecionado:</p>
               {mockProducts.filter(p => p.id === selectedProduct).map((product) => (
@@ -465,7 +465,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
                 <div className="mt-2 text-sm flex items-center gap-1 text-green-600">
                   <Percent className="h-3 w-3" />
                   <span>
-                    {selectedProduct 
+                    {selectedProduct && selectedProduct !== "custom"
                       ? `Margem de ${((result / (mockProducts.find(p => p.id === selectedProduct)?.price || 1) * quantity * 100)).toFixed(2)}%`
                       : `Margem de ${((result / (customPrice * quantity)) * 100).toFixed(2)}%`
                     }
