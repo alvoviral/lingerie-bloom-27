@@ -3,6 +3,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 type AuthContextType = {
   session: Session | null;
@@ -73,8 +74,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate, location.pathname]);
   
   const signOut = async () => {
-    console.log("Realizando logout");
-    await supabase.auth.signOut();
+    try {
+      console.log("Realizando logout");
+      setIsLoading(true);
+      await supabase.auth.signOut();
+      toast.success("Logout realizado com sucesso");
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast.error("Erro ao fazer logout");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const value = {

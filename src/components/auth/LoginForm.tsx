@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Form schema using zod for validation
 const loginSchema = z.object({
@@ -26,6 +27,7 @@ interface LoginFormProps {
 
 const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   // Create form with react-hook-form and zod validation
@@ -40,6 +42,7 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
   const handleLogin = async (values: LoginValues) => {
     try {
       setIsLoading(true);
+      setLoginError(null);
       
       console.log("Tentando login com:", values.email);
       
@@ -49,6 +52,7 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
       });
       
       if (error) {
+        console.error("Erro de autenticação:", error.message);
         throw error;
       }
       
@@ -58,13 +62,15 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
     } catch (error: any) {
       console.error("Erro ao fazer login:", error);
       
+      setLoginError("Email ou senha incorretos. Verifique suas credenciais e tente novamente.");
+      
       // Handle specific error messages
-      if (error.message.includes("Invalid login credentials")) {
-        toast.error("Email ou senha incorretos. Você já tem cadastro? Se não, clique em Cadastrar.");
-      } else if (error.message.includes("Email not confirmed")) {
-        toast.error("Por favor, confirme seu email antes de fazer login");
+      if (error.message?.includes("Invalid login credentials")) {
+        setLoginError("Email ou senha incorretos. Verifique suas credenciais e tente novamente.");
+      } else if (error.message?.includes("Email not confirmed")) {
+        setLoginError("Por favor, confirme seu email antes de fazer login");
       } else {
-        toast.error(error.message || "Erro ao fazer login");
+        setLoginError(error.message || "Erro ao fazer login");
       }
     } finally {
       setIsLoading(false);
@@ -74,6 +80,12 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
+        {loginError && (
+          <Alert variant="destructive" className="bg-red-50 border-red-200 text-red-800">
+            <AlertDescription>{loginError}</AlertDescription>
+          </Alert>
+        )}
+        
         <FormField
           control={form.control}
           name="email"
