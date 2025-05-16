@@ -61,9 +61,9 @@ const Profile = () => {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
           
-        if (error && error.code !== 'PGRST116') { // PGRST116 é "no rows found", não é um erro real nesse caso
+        if (error) {
           console.error("Erro ao buscar perfil:", error);
           toast.error("Erro ao buscar dados do perfil");
           return;
@@ -172,19 +172,8 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Verifica se o bucket existe e cria se não existir
-      const { data: buckets } = await supabase.storage.listBuckets();
-      const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
-      
-      if (!avatarBucketExists) {
-        // O bucket não existe, não podemos prosseguir
-        toast.error("Sistema não configurado corretamente para uploads");
-        console.error("Bucket de avatares não existe");
-        return;
-      }
-      
       // Upload do arquivo para o bucket de avatares
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           upsert: true,
@@ -203,18 +192,27 @@ const Profile = () => {
       if (updateError) throw updateError;
       
       // Recupera a URL pública
-      const { data } = await supabase.storage
+      const { data: urlData } = await supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
       
-      if (data) {
-        setAvatarUrl(data.publicUrl);
+      if (urlData) {
+        setAvatarUrl(urlData.publicUrl);
       }
       
       toast.success("Avatar atualizado com sucesso");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao fazer upload da imagem:", error);
-      toast.error("Erro ao fazer upload da imagem");
+      let errorMessage = "Erro ao fazer upload da imagem";
+      
+      // Mensagens de erro mais específicas
+      if (error.message?.includes("bucket not found")) {
+        errorMessage = "Bucket de armazenamento não encontrado";
+      } else if (error.message?.includes("permission")) {
+        errorMessage = "Sem permissão para upload de arquivos";
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
