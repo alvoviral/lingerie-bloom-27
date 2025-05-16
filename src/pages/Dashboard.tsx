@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -28,7 +29,7 @@ import { ptBR } from "date-fns/locale";
 
 const Dashboard = () => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const { notifications, unreadCount, markAsRead } = useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -93,7 +94,7 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center px-2">
                     <DropdownMenuLabel>Notificações</DropdownMenuLabel>
                     {unreadCount > 0 && (
-                      <Button variant="ghost" size="sm" onClick={() => markAsRead} className="h-8 text-xs">
+                      <Button variant="ghost" size="sm" onClick={() => markAllAsRead()} className="h-8 text-xs">
                         Marcar todas como lidas
                       </Button>
                     )}
