@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from '@/contexts/AuthContext';
 
 // Form schema using zod for validation
 const loginSchema = z.object({
@@ -24,6 +25,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Create form with react-hook-form and zod validation
   const form = useForm<LoginValues>({
@@ -36,15 +38,10 @@ const Login = () => {
 
   // Check if user is already logged in
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/dashboard');
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (values: LoginValues) => {
     try {
@@ -77,16 +74,14 @@ const Login = () => {
     }
   };
 
-  const handleSignUp = async () => {
+  const handleSignUp = async (values: LoginValues) => {
     try {
-      const values = form.getValues();
+      setIsLoading(true);
       
       if (!values.email || !values.password) {
         toast.error("Preencha email e senha para se cadastrar");
         return;
       }
-      
-      setIsLoading(true);
       
       const { data, error } = await supabase.auth.signUp({
         email: values.email,
@@ -125,10 +120,6 @@ const Login = () => {
     }
   };
 
-  const toggleMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-  };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-lingerie-50 to-lavender-100">
       {/* Decorative Elements */}
@@ -152,6 +143,22 @@ const Login = () => {
             <p className="text-lingerie-600 font-montserrat italic text-sm">Elegância em cada detalhe</p>
             <div className="h-px w-12 bg-lingerie-300/50"></div>
           </div>
+        </div>
+
+        {/* Toggle between login and signup */}
+        <div className="flex mb-6 bg-white/20 p-1 rounded-lg">
+          <button
+            onClick={() => setMode('login')}
+            className={`flex-1 py-2 px-4 rounded-md transition-all ${mode === 'login' ? 'bg-lingerie-500 text-white' : 'text-lingerie-600 hover:bg-lingerie-100/50'}`}
+          >
+            Entrar
+          </button>
+          <button
+            onClick={() => setMode('signup')}
+            className={`flex-1 py-2 px-4 rounded-md transition-all ${mode === 'signup' ? 'bg-lingerie-500 text-white' : 'text-lingerie-600 hover:bg-lingerie-100/50'}`}
+          >
+            Cadastrar
+          </button>
         </div>
         
         <Form {...form}>
@@ -208,27 +215,14 @@ const Login = () => {
               )}
             />
             
-            <div className="flex flex-col gap-4">
-              <Button 
-                type="submit" 
-                className="w-full bg-lingerie-500 hover:bg-lingerie-600 text-white font-montserrat py-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                disabled={isLoading}
-              >
-                <Sparkles className="h-5 w-5" />
-                {isLoading ? "Processando..." : (mode === 'login' ? "Entrar" : "Cadastrar")}
-              </Button>
-              
-              <div className="text-center">
-                <button 
-                  type="button"
-                  className="text-sm text-lingerie-600 hover:text-lingerie-800 underline underline-offset-4 font-montserrat transition-colors"
-                  onClick={toggleMode}
-                  disabled={isLoading}
-                >
-                  {mode === 'login' ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
-                </button>
-              </div>
-            </div>
+            <Button 
+              type="submit" 
+              className="w-full bg-lingerie-500 hover:bg-lingerie-600 text-white font-montserrat py-6 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              disabled={isLoading}
+            >
+              <Sparkles className="h-5 w-5" />
+              {isLoading ? "Processando..." : (mode === 'login' ? "Entrar" : "Cadastrar")}
+            </Button>
             
             <div className="text-center mt-6">
               <Link to="/" className="text-sm text-lingerie-600 hover:text-lingerie-800 underline underline-offset-4 font-montserrat transition-colors">
