@@ -24,12 +24,12 @@ export const SalesChart = () => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-24">
+    <Card className="mb-36">
       <CardHeader className="pb-0">
         <CardTitle>Gráfico de Vendas</CardTitle>
       </CardHeader>
-      <CardContent className="pb-8">
-        <div className={`${isMobile ? 'h-48' : 'h-64'} w-full relative`}>
+      <CardContent className="pb-16">
+        <div className={`${isMobile ? 'h-96' : 'h-120'} w-full relative`}>
           <ChartContainer
             config={{
               sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -39,28 +39,28 @@ export const SalesChart = () => {
             <LineChart 
               data={salesData}
               margin={{
-                top: 5,
-                right: 5,
-                left: 0,
-                bottom: 30,
+                top: 20,
+                right: 20,
+                left: 20,
+                bottom: 40,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 14 }} />
               <YAxis 
                 tickFormatter={(value) => `R$ ${value.toLocaleString()}`}
-                tick={{ fontSize: 10 }}
+                tick={{ fontSize: 14 }}
                 ticks={[0, 1]}
               />
-              <Legend wrapperStyle={{ paddingTop: 5, fontSize: 10, bottom: -10 }} />
+              <Legend wrapperStyle={{ paddingTop: 20, fontSize: 14, bottom: 0 }} />
               <Line
                 type="monotone"
                 dataKey="value"
                 name="Vendas (R$)"
                 stroke="#ec4899"
                 strokeWidth={2}
-                dot={{ r: 2, strokeWidth: 2 }}
-                activeDot={{ r: 4, stroke: "#ec4899", strokeWidth: 2 }}
+                dot={{ r: 3, strokeWidth: 2 }}
+                activeDot={{ r: 5, stroke: "#ec4899", strokeWidth: 2 }}
               />
             </LineChart>
           </ChartContainer>
