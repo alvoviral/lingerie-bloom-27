@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
-import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import MonthlyCalendar from "@/components/calendar/MonthlyCalendar";
@@ -11,26 +11,32 @@ import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDial
 import { Appointment } from "@/types/calendar";
 import { AppointmentFormValues } from "@/components/calendar/AppointmentForm";
 
-// Chave para armazenamento local
-const STORAGE_KEY = 'bellecharm_appointments';
+const STORAGE_KEY = "bellecharm-appointments";
 
-// Dados iniciais de compromissos
-const INITIAL_APPOINTMENTS: Appointment[] = [
+const initialMockAppointments: Appointment[] = [
   {
     id: "1",
-    title: "Atendimento com Maria",
+    title: "Consulta de Rotina",
     client: "Maria Silva",
-    date: "2025-05-20",
-    time: "14:30",
-    notes: "Cliente gostaria de ver a nova coleção de lingerie",
+    date: format(new Date(), "yyyy-MM-dd"),
+    time: "10:00",
+    notes: "Verificar pressão e níveis de glicose.",
   },
   {
     id: "2",
-    title: "Reunião com fornecedor",
-    client: "Distribuidora Moda Íntima",
-    date: "2025-05-22",
-    time: "10:00",
-    notes: "Negociação de preços para próxima coleção",
+    title: "Design de Sobrancelhas",
+    client: "Ana Paula",
+    date: format(new Date(), "yyyy-MM-dd"),
+    time: "14:30",
+    notes: "Trazer referências de design desejado.",
+  },
+  {
+    id: "3",
+    title: "Manutenção de Unhas em Gel",
+    client: "Carla Zambelli",
+    date: format(new Date(new Date().setDate(new Date().getDate() + 1)), "yyyy-MM-dd"),
+    time: "16:00",
+    notes: "Cor: nude clássico.",
   },
 ];
 
@@ -41,107 +47,83 @@ const Calendar = () => {
   const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [appointmentIdToDelete, setAppointmentIdToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    document.title = "Agenda | BelleCharm";
-  }, []);
-
-  // Carregar compromissos do localStorage
-  useEffect(() => {
-    const loadAppointments = () => {
-      const savedAppointments = localStorage.getItem(STORAGE_KEY);
-      if (savedAppointments) {
-        try {
-          const parsedAppointments = JSON.parse(savedAppointments);
-          setAppointments(parsedAppointments);
-          console.log("Compromissos carregados do armazenamento local:", parsedAppointments.length);
-        } catch (error) {
-          console.error("Erro ao carregar compromissos:", error);
-          setAppointments(INITIAL_APPOINTMENTS);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_APPOINTMENTS));
-        }
-      } else {
-        console.log("Nenhum compromisso encontrado, carregando dados iniciais");
-        setAppointments(INITIAL_APPOINTMENTS);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_APPOINTMENTS));
-      }
-    };
-
-    loadAppointments();
-  }, []);
-
-  // Função para salvar compromissos no localStorage
-  const saveAppointments = (updatedAppointments: Appointment[]) => {
-    try {
-      setAppointments(updatedAppointments);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAppointments));
-      console.log("Compromissos salvos no armazenamento local:", updatedAppointments.length);
-    } catch (error) {
-      console.error("Erro ao salvar compromissos:", error);
-      toast.error("Erro ao salvar compromissos");
+    // Load appointments from localStorage on component mount
+    const storedAppointments = localStorage.getItem(STORAGE_KEY);
+    if (storedAppointments) {
+      setAppointments(JSON.parse(storedAppointments));
+    } else {
+      // If no appointments in localStorage, initialize with mock appointments
+      setAppointments(initialMockAppointments);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialMockAppointments));
     }
+  }, []);
+
+  useEffect(() => {
+    // Save appointments to localStorage whenever the appointments state changes
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+  }, [appointments]);
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
   };
 
-  // Filtra os compromissos para a data selecionada
-  const dailyAppointments = appointments.filter(
-    (apt) => apt.date === format(selectedDate, "yyyy-MM-dd")
-  );
-
-  const handleNewAppointment = () => {
-    setSelectedAppointment(null);
+  const openAppointmentDialog = () => {
     setIsAppointmentDialogOpen(true);
+    setIsEditing(false);
+  };
+
+  const closeAppointmentDialog = () => {
+    setIsAppointmentDialogOpen(false);
+    setSelectedAppointment(null);
+  };
+
+  const handleCreateAppointment = (values: AppointmentFormValues) => {
+    const newAppointment: Appointment = {
+      id: uuidv4(),
+      ...values,
+      date: format(new Date(values.date), "yyyy-MM-dd"), // Format the date to yyyy-MM-dd
+    };
+    setAppointments([...appointments, newAppointment]);
+    closeAppointmentDialog();
   };
 
   const handleEditAppointment = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
+    setIsEditing(true);
     setIsAppointmentDialogOpen(true);
   };
 
-  const handleDeleteAppointment = (id: string) => {
-    const appointmentToDelete = appointments.find(apt => apt.id === id);
-    setAppointmentIdToDelete(id);
+  const handleUpdateAppointment = (values: AppointmentFormValues) => {
+    if (!selectedAppointment) return;
+
+    const updatedAppointments = appointments.map((appointment) =>
+      appointment.id === selectedAppointment.id
+        ? { ...appointment, ...values, date: format(new Date(values.date), "yyyy-MM-dd") }
+        : appointment
+    );
+    setAppointments(updatedAppointments);
+    closeAppointmentDialog();
+  };
+
+  const handleDeleteAppointment = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    if (appointmentIdToDelete) {
-      const updatedAppointments = appointments.filter(apt => apt.id !== appointmentIdToDelete);
-      saveAppointments(updatedAppointments);
+  const confirmDelete = () => {
+    if (selectedAppointment) {
+      setAppointments(appointments.filter((appointment) => appointment.id !== selectedAppointment.id));
       setIsDeleteDialogOpen(false);
-      setAppointmentIdToDelete(null);
-      toast.success("Compromisso excluído com sucesso!");
-      console.log("Compromisso excluído. Total de compromissos restantes:", updatedAppointments.length);
+      setSelectedAppointment(null);
     }
   };
 
-  const handleSaveAppointment = (values: AppointmentFormValues) => {
-    const formattedDate = format(values.date, "yyyy-MM-dd");
-    
-    if (selectedAppointment) {
-      // Edição
-      const updatedAppointments = appointments.map(apt => 
-        apt.id === selectedAppointment.id 
-          ? { ...apt, ...values, date: formattedDate } 
-          : apt
-      );
-      saveAppointments(updatedAppointments);
-      toast.success("Compromisso atualizado com sucesso!");
-    } else {
-      // Novo compromisso
-      const newAppointment: Appointment = {
-        id: `${Date.now()}`,
-        title: values.title,
-        client: values.client,
-        date: formattedDate,
-        time: values.time,
-        notes: values.notes,
-      };
-      saveAppointments([...appointments, newAppointment]);
-      toast.success("Compromisso adicionado com sucesso!");
-    }
-    
-    setIsAppointmentDialogOpen(false);
+  const cancelDelete = () => {
+    setIsDeleteDialogOpen(false);
+    setSelectedAppointment(null);
   };
 
   // Functions for calendar navigation
@@ -158,56 +140,56 @@ const Calendar = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar className="hidden md:block w-64 flex-shrink-0" />
-      
-      <div className="flex-1 overflow-auto">
-        <div className="p-6 md:p-8">
-          <Header 
-            title="Agenda" 
-            subtitle="Gerencie seus compromissos e atendimentos." 
-          />
-          
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-[1fr,300px] gap-8">
-            <MonthlyCalendar 
-              currentDate={currentDate}
-              selectedDate={selectedDate} 
-              onDateSelect={setSelectedDate} 
-              appointments={appointments}
-              onPreviousMonth={handlePreviousMonth}
-              onNextMonth={handleNextMonth}
-            />
-            
-            <div className="md:border-l pl-0 md:pl-8">
-              <DailyAppointments 
+    <div className="flex h-screen bg-gray-50">
+      <Sidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <Header title="Agenda" />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4">
+          <div className="container mx-auto">
+            <div className="mb-4">
+              <button
+                className="bg-lingerie-600 text-white font-bold py-2 px-4 rounded hover:bg-lingerie-800 transition-colors"
+                onClick={openAppointmentDialog}
+              >
+                Novo Agendamento
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <MonthlyCalendar
+                currentDate={currentDate}
                 selectedDate={selectedDate}
-                appointments={dailyAppointments}
-                onNewAppointment={handleNewAppointment}
-                onEditAppointment={handleEditAppointment}
-                onDeleteAppointment={handleDeleteAppointment}
+                onDateSelect={handleDateSelect}
+                appointments={appointments}
+                onPreviousMonth={handlePreviousMonth}
+                onNextMonth={handleNextMonth}
+              />
+              <DailyAppointments
+                selectedDate={selectedDate}
+                appointments={appointments}
+                onEdit={handleEditAppointment}
+                onDelete={handleDeleteAppointment}
               />
             </div>
           </div>
-        </div>
+        </main>
+        <AppointmentDialog
+          isOpen={isAppointmentDialogOpen}
+          onClose={closeAppointmentDialog}
+          onCreate={handleCreateAppointment}
+          onUpdate={handleUpdateAppointment}
+          appointment={selectedAppointment}
+          isEditing={isEditing}
+        />
+        {selectedAppointment && (
+          <DeleteConfirmationDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={cancelDelete}
+            onConfirm={confirmDelete}
+            itemName={selectedAppointment.title}
+            itemType="agendamento"
+          />
+        )}
       </div>
-      
-      {/* Dialog de compromisso */}
-      <AppointmentDialog
-        isOpen={isAppointmentDialogOpen}
-        onOpenChange={setIsAppointmentDialogOpen}
-        selectedDate={selectedDate}
-        onSubmit={handleSaveAppointment}
-        appointment={selectedAppointment}
-      />
-
-      {/* Dialog de confirmação de exclusão */}
-      <DeleteConfirmationDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={appointments.find(apt => apt.id === appointmentIdToDelete)?.title || ""}
-        itemType="compromisso"
-      />
     </div>
   );
 };
