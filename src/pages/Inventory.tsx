@@ -132,17 +132,18 @@ const Inventory = () => {
   );
 
   const handleAddProduct = () => {
-    const status = 
+    // Fix: Explicitly type the status as one of the allowed values
+    const productStatus: "Em estoque" | "Estoque baixo" | "Sem estoque" = 
       newProduct.stock === 0 
         ? "Sem estoque" 
         : newProduct.stock <= 5 
           ? "Estoque baixo" 
           : "Em estoque";
     
-    const productWithId = {
+    const productWithId: Product = {
       ...newProduct,
       id: `${Date.now()}`,
-      status
+      status: productStatus
     };
     
     setProducts([...products, productWithId]);
