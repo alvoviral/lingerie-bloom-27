@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -8,43 +9,71 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { customerFormSchema, CustomerFormValues, Customer } from "@/types/customer";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface CustomerFormProps {
   onSubmit: (customer: Customer) => void;
   onCancel: () => void;
+  customer?: Customer;
+  isEditing?: boolean;
 }
 
-const CustomerForm = ({ onSubmit, onCancel }: CustomerFormProps) => {
+const CustomerForm = ({ onSubmit, onCancel, customer, isEditing = false }: CustomerFormProps) => {
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      segment: "Regular",
-      notes: ""
+      name: customer?.name || "",
+      email: customer?.email || "",
+      phone: customer?.phone || "",
+      address: customer?.address || "",
+      segment: customer?.segment || "Regular",
+      notes: customer?.notes || ""
     }
   });
 
-  const handleSubmit = (data: CustomerFormValues) => {
-    const newCustomer: Customer = {
-      id: Date.now().toString(),
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      address: data.address,
-      segment: data.segment,
-      notes: data.notes,
-      totalSpent: 0,
-      lastPurchase: "Nenhuma compra"
-    };
+  // Update form values when customer prop changes
+  useEffect(() => {
+    if (customer) {
+      form.reset({
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address,
+        segment: customer.segment,
+        notes: customer.notes || ""
+      });
+    }
+  }, [customer, form]);
 
-    onSubmit(newCustomer);
+  const handleSubmit = (data: CustomerFormValues) => {
+    if (isEditing && customer) {
+      // Update existing customer
+      const updatedCustomer: Customer = {
+        ...customer,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        segment: data.segment,
+        notes: data.notes
+      };
+      onSubmit(updatedCustomer);
+    } else {
+      // Add new customer
+      const newCustomer: Customer = {
+        id: Date.now().toString(),
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        segment: data.segment,
+        notes: data.notes,
+        totalSpent: 0,
+        lastPurchase: "Nenhuma compra"
+      };
+      onSubmit(newCustomer);
+    }
     form.reset();
-    toast.success("Cliente adicionado", {
-      description: `${data.name} foi adicionado(a) com sucesso à sua base de clientes.`
-    });
   };
 
   return (
@@ -146,7 +175,7 @@ const CustomerForm = ({ onSubmit, onCancel }: CustomerFormProps) => {
         
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
-          <Button type="submit">Adicionar Cliente</Button>
+          <Button type="submit">{isEditing ? "Salvar Alterações" : "Adicionar Cliente"}</Button>
         </DialogFooter>
       </form>
     </Form>

@@ -1,16 +1,23 @@
 
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { UserSearch } from "lucide-react";
+import { UserSearch, Edit, Trash2 } from "lucide-react";
 import { Customer } from "@/types/customer";
 import { formatDate } from "@/utils/customerUtils";
 
 interface CustomerTableProps {
   customers: Customer[];
   onViewCustomer: (customer: Customer) => void;
+  onEditCustomer: (customer: Customer) => void;
+  onDeleteCustomer: (customer: Customer) => void;
 }
 
-const CustomerTable = ({ customers, onViewCustomer }: CustomerTableProps) => {
+const CustomerTable = ({ 
+  customers, 
+  onViewCustomer,
+  onEditCustomer,
+  onDeleteCustomer
+}: CustomerTableProps) => {
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="p-4">
@@ -58,9 +65,17 @@ const CustomerTable = ({ customers, onViewCustomer }: CustomerTableProps) => {
                     {formatDate(customer.lastPurchase)}
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={() => onViewCustomer(customer)}>
-                      <UserSearch size={18} />
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => onViewCustomer(customer)} title="Ver detalhes">
+                        <UserSearch size={18} />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => onEditCustomer(customer)} title="Editar cliente">
+                        <Edit size={18} />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => onDeleteCustomer(customer)} title="Excluir cliente">
+                        <Trash2 size={18} />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
