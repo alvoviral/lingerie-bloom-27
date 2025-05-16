@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -9,7 +8,8 @@ import MonthlyCalendar from "@/components/calendar/MonthlyCalendar";
 import DailyAppointments from "@/components/calendar/DailyAppointments";
 import AppointmentDialog from "@/components/calendar/AppointmentDialog";
 import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
-import { Appointment, AppointmentFormValues } from "@/types/calendar";
+import { Appointment } from "@/types/calendar";
+import { AppointmentFormValues } from "@/components/calendar/AppointmentForm";
 
 // Chave para armazenamento local
 const STORAGE_KEY = 'bellecharm_appointments';
@@ -36,6 +36,7 @@ const INITIAL_APPOINTMENTS: Appointment[] = [
 
 const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date()); // For calendar navigation
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -143,6 +144,19 @@ const Calendar = () => {
     setIsAppointmentDialogOpen(false);
   };
 
+  // Functions for calendar navigation
+  const handlePreviousMonth = () => {
+    const prevMonth = new Date(currentDate);
+    prevMonth.setMonth(prevMonth.getMonth() - 1);
+    setCurrentDate(prevMonth);
+  };
+
+  const handleNextMonth = () => {
+    const nextMonth = new Date(currentDate);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    setCurrentDate(nextMonth);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar className="hidden md:block w-64 flex-shrink-0" />
@@ -156,9 +170,12 @@ const Calendar = () => {
           
           <div className="mt-8 grid grid-cols-1 md:grid-cols-[1fr,300px] gap-8">
             <MonthlyCalendar 
+              currentDate={currentDate}
               selectedDate={selectedDate} 
-              onSelectDate={setSelectedDate} 
+              onDateSelect={setSelectedDate} 
               appointments={appointments}
+              onPreviousMonth={handlePreviousMonth}
+              onNextMonth={handleNextMonth}
             />
             
             <div className="md:border-l pl-0 md:pl-8">

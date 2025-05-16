@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Eye, Send, Clock, AlertTriangle, Trash2 } from "lucide-react";
 import { MessageItem, MessageStatus } from "./types";
-import DeleteDialog from "../customers/DeleteDialog";
+import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 
 const mockMessages: MessageItem[] = [
   {
@@ -174,7 +173,7 @@ const MessagesTab = () => {
       </div>
 
       {selectedMessage && (
-        <DeleteDialog
+        <DeleteConfirmationDialog
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onConfirm={handleDelete}
