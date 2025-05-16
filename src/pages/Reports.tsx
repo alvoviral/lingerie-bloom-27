@@ -19,14 +19,14 @@ const Reports = () => {
       <Sidebar className="hidden md:block w-64 flex-shrink-0" />
       
       <div className="flex-1 overflow-auto">
-        <div className="p-6 md:p-8 pb-32">
+        <div className="p-6 md:p-8 pb-40">
           <Header 
             title="Relatórios" 
             subtitle="Analise dados e métricas do seu negócio." 
           />
           
-          <div className="mt-24 space-y-28">
-            <div className="flex justify-between items-center mt-24">
+          <div className="mt-32 space-y-36">
+            <div className="flex justify-between items-center mt-32">
               <h3 className="text-lg font-medium">Visão Geral do Negócio</h3>
               <TimeframeSelector />
             </div>
@@ -35,9 +35,9 @@ const Reports = () => {
             
             <ReportTabs />
             
-            <Separator className="my-32" />
+            <Separator className="my-40" />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-28 mb-32">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mt-32 mb-40">
               <ScheduledReportsCard />
               <AvailableReportsCard />
             </div>
