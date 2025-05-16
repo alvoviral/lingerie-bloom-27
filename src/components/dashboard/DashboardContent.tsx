@@ -1,10 +1,11 @@
 
-import { Download } from "lucide-react";
+import { Download, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import StatisticsCardGrid from "@/components/dashboard/StatisticsCardGrid";
 import FinancialSummary from "@/components/dashboard/FinancialSummary";
 import InventorySummary from "@/components/dashboard/InventorySummary";
 import RecentSales from "@/components/dashboard/RecentSales";
+import { Link } from "react-router-dom";
 
 interface DashboardContentProps {
   onExportClick: () => void;
@@ -34,6 +35,16 @@ export const DashboardContent = ({ onExportClick }: DashboardContentProps) => {
           <Download className="h-4 w-4" />
           Exportar Dados
         </Button>
+        
+        <Link to="/dashboard/agenda">
+          <Button
+            variant="outline"
+            className="w-full flex items-center justify-center gap-2"
+          >
+            <Calendar className="h-4 w-4" />
+            Ver Agenda
+          </Button>
+        </Link>
       </div>
     </>
   );

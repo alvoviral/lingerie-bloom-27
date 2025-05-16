@@ -97,7 +97,6 @@ const Sidebar = ({ className }: SidebarProps) => {
           Configurações
         </Link>
         
-        {/* Calculadora button right below Configurações */}
         <button
           onClick={() => setIsCalculatorOpen(true)}
           className={cn(
@@ -116,7 +115,6 @@ const Sidebar = ({ className }: SidebarProps) => {
         </button>
       </div>
       
-      {/* Calculadora component */}
       <BusinessCalculator 
         isOpen={isCalculatorOpen} 
         onClose={() => setIsCalculatorOpen(false)} 

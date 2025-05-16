@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Index from './pages/Index';
@@ -32,9 +33,9 @@ function App() {
                 <Route path="/dashboard/vendas" element={<Sales />} />
                 <Route path="/dashboard/estoque" element={<Inventory />} />
                 <Route path="/dashboard/clientes" element={<Customers />} />
-                <Route path="/dashboard/financeiro" element={<Finance />} />
+                <Route path="/dashboard/financas" element={<Finance />} />
                 <Route path="/dashboard/marketplaces" element={<Marketplaces />} />
-                <Route path="/dashboard/calendario" element={<Calendar />} />
+                <Route path="/dashboard/agenda" element={<Calendar />} />
                 <Route path="/dashboard/whatsapp" element={<Whatsapp />} />
                 <Route path="/dashboard/relatorios" element={<Reports />} />
                 <Route path="/dashboard/configuracoes" element={<Settings />} />
