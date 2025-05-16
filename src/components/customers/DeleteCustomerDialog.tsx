@@ -1,5 +1,5 @@
 
-import DeleteDialog from "./DeleteDialog";
+import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 
 interface DeleteCustomerDialogProps {
   isOpen: boolean;
@@ -15,7 +15,7 @@ const DeleteCustomerDialog = ({
   customerName,
 }: DeleteCustomerDialogProps) => {
   return (
-    <DeleteDialog
+    <DeleteConfirmationDialog
       isOpen={isOpen}
       onClose={onClose}
       onConfirm={onConfirm}

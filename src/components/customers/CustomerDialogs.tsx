@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CustomerForm from "./CustomerForm";
 import CustomerDetailDialog from "./CustomerDetailDialog";
-import DeleteCustomerDialog from "./DeleteCustomerDialog";
+import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 import { useCustomers } from "@/contexts/CustomerContext";
 
 export const CustomerDialogs = () => {
@@ -68,11 +68,12 @@ export const CustomerDialogs = () => {
 
       {/* Modal de Confirmação de Exclusão */}
       {selectedCustomer && (
-        <DeleteCustomerDialog 
+        <DeleteConfirmationDialog 
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onConfirm={handleDeleteCustomer}
-          customerName={selectedCustomer.name}
+          itemName={selectedCustomer.name}
+          itemType="cliente"
         />
       )}
     </>

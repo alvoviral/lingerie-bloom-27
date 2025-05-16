@@ -10,21 +10,21 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export interface DeleteDialogProps {
+interface DeleteConfirmationDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  itemName: string;
+  itemName?: string;
   itemType?: string;
 }
 
-const DeleteDialog = ({
+const DeleteConfirmationDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  itemName,
-  itemType = "cliente",
-}: DeleteDialogProps) => {
+  itemName = "item",
+  itemType = "item",
+}: DeleteConfirmationDialogProps) => {
   const handleConfirm = () => {
     onConfirm();
     // Garante que o modal será fechado após a confirmação
@@ -42,7 +42,10 @@ const DeleteDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogAction 
+            onClick={handleConfirm} 
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
             Excluir
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -51,4 +54,4 @@ const DeleteDialog = ({
   );
 };
 
-export default DeleteDialog;
+export default DeleteConfirmationDialog;

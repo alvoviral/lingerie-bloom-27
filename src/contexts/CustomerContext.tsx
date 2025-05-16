@@ -47,20 +47,40 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize customer data from localStorage if available
   useEffect(() => {
-    const savedCustomers = localStorage.getItem(STORAGE_KEY);
-    if (savedCustomers) {
-      setCustomers(JSON.parse(savedCustomers));
-    } else {
-      const initialCustomers = getInitialCustomers();
-      setCustomers(initialCustomers);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialCustomers));
-    }
+    const loadCustomers = () => {
+      const savedCustomers = localStorage.getItem(STORAGE_KEY);
+      if (savedCustomers) {
+        try {
+          const parsedCustomers = JSON.parse(savedCustomers);
+          setCustomers(parsedCustomers);
+          console.log("Clientes carregados do armazenamento local:", parsedCustomers.length);
+        } catch (error) {
+          console.error("Erro ao carregar clientes:", error);
+          const initialCustomers = getInitialCustomers();
+          setCustomers(initialCustomers);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(initialCustomers));
+        }
+      } else {
+        console.log("Nenhum cliente encontrado, carregando dados iniciais");
+        const initialCustomers = getInitialCustomers();
+        setCustomers(initialCustomers);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialCustomers));
+      }
+    };
+
+    loadCustomers();
   }, []);
 
   // Salva clientes no localStorage sempre que houver mudanças
   const saveCustomers = (updatedCustomers: Customer[]) => {
-    setCustomers(updatedCustomers);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCustomers));
+    try {
+      setCustomers(updatedCustomers);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCustomers));
+      console.log("Clientes salvos no armazenamento local:", updatedCustomers.length);
+    } catch (error) {
+      console.error("Erro ao salvar clientes:", error);
+      toast.error("Erro ao salvar clientes");
+    }
   };
 
   // Filter customers based on search and segment filter
@@ -106,6 +126,8 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
     toast.success("Cliente excluído", {
       description: `${customerName} foi removido(a) da sua base de clientes.`
     });
+    
+    console.log("Cliente excluído. Total de clientes restantes:", updatedCustomers.length);
   };
 
   const handleViewCustomer = (customer: Customer) => {

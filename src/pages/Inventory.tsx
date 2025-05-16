@@ -10,7 +10,7 @@ import SearchBar from "@/components/inventory/SearchBar";
 import ProductForm from "@/components/inventory/ProductForm";
 import ProductTable from "@/components/inventory/ProductTable";
 import EditProductForm from "@/components/inventory/EditProductForm";
-import DeleteConfirmationDialog from "@/components/inventory/DeleteConfirmationDialog";
+import DeleteConfirmationDialog from "@/components/shared/DeleteConfirmationDialog";
 import { Product, NewProduct } from "@/types/inventory";
 import { MOCK_PRODUCTS, getProductStatus } from "@/utils/inventoryUtils";
 import { supabase } from "@/integrations/supabase/client";
@@ -171,6 +171,7 @@ const Inventory = () => {
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         itemName={products.find(p => p.id === productIdToDelete)?.name}
+        itemType="produto"
       />
     </div>
   );
