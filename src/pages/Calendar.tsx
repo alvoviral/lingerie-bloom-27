@@ -89,9 +89,14 @@ const Calendar = () => {
   });
 
   const onSubmit = (values: z.infer<typeof appointmentFormSchema>) => {
-    const newAppointment = {
+    // Create a new appointment with required fields defined explicitly
+    const newAppointment: Appointment = {
       id: Date.now().toString(),
-      ...values,
+      title: values.title,
+      client: values.client,
+      date: values.date,
+      time: values.time,
+      notes: values.notes,
     };
     
     setAppointments([...appointments, newAppointment]);
