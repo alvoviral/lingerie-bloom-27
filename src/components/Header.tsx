@@ -1,6 +1,5 @@
 
-import { Bell, Search, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,11 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNotifications } from "@/contexts/NotificationContext";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -65,16 +64,8 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
         {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
       </div>
       
-      <div className="flex items-center gap-4 w-full sm:w-auto">
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar..."
-            className="pl-8"
-          />
-        </div>
-        
-        {/* Order rearranged: user profile (highest z-index), then notifications, then other elements */}
+      <div className="flex items-center gap-4">
+        {/* User profile dropdown - highest z-index (30) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
@@ -100,6 +91,7 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
         
+        {/* Notifications dropdown - middle z-index (20) */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="relative z-20">
