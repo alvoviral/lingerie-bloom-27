@@ -16,6 +16,10 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface HeaderProps {
   title: string;
@@ -24,6 +28,34 @@ interface HeaderProps {
 
 const Header = ({ title, subtitle }: HeaderProps) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleProfileClick = () => {
+    // Navigate to profile page - you can implement this route later
+    toast.info("Funcionalidade de perfil em desenvolvimento");
+  };
+
+  const handleSettingsClick = () => {
+    // Navigate to settings page
+    navigate('/dashboard/configuracoes');
+  };
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      // If you're using Supabase for auth
+      await supabase.auth.signOut();
+      // Redirect to login page or home
+      toast.success("Logout realizado com sucesso");
+      navigate('/');
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+      toast.error("Erro ao fazer logout");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <div className="border-b pb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -125,10 +157,16 @@ const Header = ({ title, subtitle }: HeaderProps) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Perfil</DropdownMenuItem>
-            <DropdownMenuItem>Configurações</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Sair</DropdownMenuItem>
+            <DropdownMenuItem 
+              className="cursor-pointer text-red-500 focus:text-red-500" 
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? "Saindo..." : "Sair"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
