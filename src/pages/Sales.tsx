@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -100,70 +99,8 @@ const Sales = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  const [sales, setSales] = useState<Sale[]>([
-    {
-      id: "1",
-      orderNumber: "BC-2025-0001",
-      customer: "Carolina Silva",
-      date: "2025-05-15",
-      total: 189.80,
-      status: "Enviado",
-      items: [
-        { product: "Conjunto Renda Floral (M/Preto)", quantity: 1, price: 129.90 },
-        { product: "Calcinha Fio Dental Renda (M/Vermelho)", quantity: 1, price: 49.90 },
-      ],
-      marketplace: "Site Próprio"
-    },
-    {
-      id: "2",
-      orderNumber: "BC-2025-0002",
-      customer: "Fernanda Oliveira",
-      date: "2025-05-14",
-      total: 89.90,
-      status: "Pago",
-      items: [
-        { product: "Sutiã Push Up Delicado (42/Rosa)", quantity: 1, price: 89.90 }
-      ],
-      marketplace: "Shopee"
-    },
-    {
-      id: "3",
-      orderNumber: "BC-2025-0003",
-      customer: "Amanda Costa",
-      date: "2025-05-14",
-      total: 279.80,
-      status: "Pendente",
-      items: [
-        { product: "Body Transparente Bordado (G/Branco)", quantity: 1, price: 159.90 },
-        { product: "Camisola Cetim Luxo (P/Azul Céu)", quantity: 1, price: 119.90 }
-      ],
-      marketplace: "Mercado Livre"
-    },
-    {
-      id: "4",
-      orderNumber: "BC-2025-0004",
-      customer: "Mariana Ribeiro",
-      date: "2025-05-13",
-      total: 159.90,
-      status: "Entregue",
-      items: [
-        { product: "Body Transparente Bordado (G/Branco)", quantity: 1, price: 159.90 }
-      ],
-      marketplace: "Site Próprio"
-    },
-    {
-      id: "5",
-      orderNumber: "BC-2025-0005",
-      customer: "Luiza Mendes",
-      date: "2025-05-10",
-      total: 49.90,
-      status: "Cancelado",
-      items: [
-        { product: "Calcinha Fio Dental Renda (M/Vermelho)", quantity: 1, price: 49.90 }
-      ],
-      marketplace: "Shopee"
-    }
-  ]);
+  // Resetting all sales data to empty array
+  const [sales, setSales] = useState<Sale[]>([]);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [saleToDelete, setSaleToDelete] = useState<string | null>(null);
@@ -210,19 +147,19 @@ const Sales = () => {
     }
   };
 
+  // Function to get total revenue - now returns 0
   const getTotalRevenue = () => {
-    return sales
-      .filter(sale => sale.status !== "Cancelado")
-      .reduce((acc, sale) => acc + sale.total, 0)
-      .toFixed(2);
+    return "0,00";
   };
 
+  // Function to get pending orders - now returns 0
   const getPendingOrders = () => {
-    return sales.filter(sale => sale.status === "Pendente").length;
+    return 0;
   };
 
+  // Function to get shipped orders - now returns 0
   const getShippedOrders = () => {
-    return sales.filter(sale => sale.status === "Enviado").length;
+    return 0;
   };
 
   const updateOrderStatus = (id: string, newStatus: "Pendente" | "Pago" | "Enviado" | "Entregue" | "Cancelado") => {
@@ -493,7 +430,7 @@ const Sales = () => {
               <CardContent>
                 <div className="text-2xl font-bold">R$ {getTotalRevenue()}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  +12% em relação ao mês anterior
+                  +0% em relação ao mês anterior
                 </p>
               </CardContent>
             </Card>

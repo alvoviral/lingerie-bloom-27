@@ -24,7 +24,8 @@ interface Sale {
   date: string;
 }
 
-const salesData: Sale[] = []; // Empty array since there are no real sales yet
+// Reset to empty array
+const salesData: Sale[] = [];
 
 const getStatusColor = (status: string) => {
   switch (status) {
