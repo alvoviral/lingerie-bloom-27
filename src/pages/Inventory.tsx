@@ -32,19 +32,38 @@ const Inventory = () => {
 
   // Inicializar produtos do armazenamento local ou dos dados mock
   useEffect(() => {
-    const savedProducts = localStorage.getItem(STORAGE_KEY);
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    } else {
-      setProducts(MOCK_PRODUCTS);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PRODUCTS));
-    }
+    const loadProducts = () => {
+      const savedProducts = localStorage.getItem(STORAGE_KEY);
+      if (savedProducts) {
+        try {
+          const parsedProducts = JSON.parse(savedProducts);
+          setProducts(parsedProducts);
+          console.log("Produtos carregados do armazenamento local:", parsedProducts.length);
+        } catch (error) {
+          console.error("Erro ao carregar produtos:", error);
+          setProducts(MOCK_PRODUCTS);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PRODUCTS));
+        }
+      } else {
+        console.log("Nenhum produto encontrado, carregando dados mock");
+        setProducts(MOCK_PRODUCTS);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PRODUCTS));
+      }
+    };
+
+    loadProducts();
   }, []);
 
   // Função para salvar produtos no armazenamento local
   const saveProducts = (updatedProducts: Product[]) => {
-    setProducts(updatedProducts);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
+    try {
+      setProducts(updatedProducts);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
+      console.log("Produtos salvos no armazenamento local:", updatedProducts.length);
+    } catch (error) {
+      console.error("Erro ao salvar produtos:", error);
+      toast.error("Erro ao salvar produtos");
+    }
   };
 
   const handleAddProduct = (newProductData: NewProduct) => {
@@ -78,6 +97,7 @@ const Inventory = () => {
   };
 
   const handleDeleteClick = (productId: string) => {
+    const productToDelete = products.find(p => p.id === productId);
     setProductIdToDelete(productId);
     setIsDeleteDialogOpen(true);
   };
@@ -89,6 +109,7 @@ const Inventory = () => {
       setIsDeleteDialogOpen(false);
       setProductIdToDelete(null);
       toast.success("Produto excluído com sucesso!");
+      console.log("Produto excluído. Total de produtos restantes:", updatedProducts.length);
     }
   };
 
@@ -149,6 +170,7 @@ const Inventory = () => {
         isOpen={isDeleteDialogOpen}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
+        itemName={products.find(p => p.id === productIdToDelete)?.name}
       />
     </div>
   );
