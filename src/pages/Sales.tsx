@@ -52,7 +52,7 @@ const Sales = () => {
   }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const [sales, setSales] = useState<Sale[]>([
     {
       id: "1",
@@ -123,7 +123,7 @@ const Sales = () => {
       sale.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
       sale.customer.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = filterStatus ? sale.status === filterStatus : true;
+    const matchesStatus = filterStatus === "all" ? true : sale.status === filterStatus;
     
     return matchesSearch && matchesStatus;
   });
@@ -239,7 +239,7 @@ const Sales = () => {
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todos</SelectItem>
+                      <SelectItem value="all">Todos</SelectItem>
                       <SelectItem value="Pendente">Pendente</SelectItem>
                       <SelectItem value="Pago">Pago</SelectItem>
                       <SelectItem value="Enviado">Enviado</SelectItem>
@@ -303,7 +303,7 @@ const Sales = () => {
                             <div className="flex flex-col items-center justify-center text-muted-foreground">
                               <ShoppingCart className="h-10 w-10 mb-2" />
                               <p>Nenhum pedido encontrado</p>
-                              {(searchQuery || filterStatus) && <p className="text-sm">Tente outros filtros</p>}
+                              {(searchQuery || filterStatus !== "all") && <p className="text-sm">Tente outros filtros</p>}
                             </div>
                           </TableCell>
                         </TableRow>
