@@ -31,51 +31,51 @@ import {
   Clock
 } from "lucide-react";
 
-// Sample data for reports
+// Reset all sample data for reports
 const salesData = [
-  { month: 'Jan', value: 12400 },
-  { month: 'Fev', value: 14800 },
-  { month: 'Mar', value: 15300 },
-  { month: 'Abr', value: 16200 },
-  { month: 'Mai', value: 18100 },
-  { month: 'Jun', value: 17400 },
-  { month: 'Jul', value: 19600 },
-  { month: 'Ago', value: 21200 },
-  { month: 'Set', value: 20100 },
-  { month: 'Out', value: 22800 },
-  { month: 'Nov', value: 25400 },
-  { month: 'Dez', value: 28900 },
+  { month: 'Jan', value: 0 },
+  { month: 'Fev', value: 0 },
+  { month: 'Mar', value: 0 },
+  { month: 'Abr', value: 0 },
+  { month: 'Mai', value: 0 },
+  { month: 'Jun', value: 0 },
+  { month: 'Jul', value: 0 },
+  { month: 'Ago', value: 0 },
+  { month: 'Set', value: 0 },
+  { month: 'Out', value: 0 },
+  { month: 'Nov', value: 0 },
+  { month: 'Dez', value: 0 },
 ];
 
 const categoryData = [
-  { name: 'Lingerie', value: 45 },
-  { name: 'Roupas íntimas', value: 25 },
-  { name: 'Sleepwear', value: 15 },
-  { name: 'Acessórios', value: 10 },
-  { name: 'Outros', value: 5 },
+  { name: 'Lingerie', value: 0 },
+  { name: 'Roupas íntimas', value: 0 },
+  { name: 'Sleepwear', value: 0 },
+  { name: 'Acessórios', value: 0 },
+  { name: 'Outros', value: 0 },
 ];
 
 const marketplaceData = [
-  { name: 'Loja própria', value: 40 },
-  { name: 'Shopee', value: 30 },
-  { name: 'Mercado Livre', value: 15 },
-  { name: 'Magazine Luiza', value: 10 },
-  { name: 'Casas Bahia', value: 5 },
+  { name: 'Loja própria', value: 0 },
+  { name: 'Shopee', value: 0 },
+  { name: 'Mercado Livre', value: 0 },
+  { name: 'Magazine Luiza', value: 0 },
+  { name: 'Casas Bahia', value: 0 },
 ];
 
 const inventoryData = [
-  { month: 'Jan', estoque: 120, vendas: 80 },
-  { month: 'Fev', estoque: 130, vendas: 85 },
-  { month: 'Mar', estoque: 140, vendas: 90 },
-  { month: 'Abr', estoque: 150, vendas: 95 },
-  { month: 'Mai', estoque: 160, vendas: 100 },
-  { month: 'Jun', estoque: 170, vendas: 105 },
-  { month: 'Jul', estoque: 180, vendas: 110 },
-  { month: 'Ago', estoque: 190, vendas: 115 },
-  { month: 'Set', estoque: 200, vendas: 120 },
-  { month: 'Out', estoque: 210, vendas: 125 },
-  { month: 'Nov', estoque: 220, vendas: 130 },
-  { month: 'Dez', estoque: 230, vendas: 135 },
+  { month: 'Jan', estoque: 0, vendas: 0 },
+  { month: 'Fev', estoque: 0, vendas: 0 },
+  { month: 'Mar', estoque: 0, vendas: 0 },
+  { month: 'Abr', estoque: 0, vendas: 0 },
+  { month: 'Mai', estoque: 0, vendas: 0 },
+  { month: 'Jun', estoque: 0, vendas: 0 },
+  { month: 'Jul', estoque: 0, vendas: 0 },
+  { month: 'Ago', estoque: 0, vendas: 0 },
+  { month: 'Set', estoque: 0, vendas: 0 },
+  { month: 'Out', estoque: 0, vendas: 0 },
+  { month: 'Nov', estoque: 0, vendas: 0 },
+  { month: 'Dez', estoque: 0, vendas: 0 },
 ];
 
 const COLORS = ['#ec4899', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b'];
@@ -120,33 +120,33 @@ const Reports = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Vendas Realizadas"
-                value="1.248"
+                value="0"
                 icon={ShoppingCart}
-                trend={12.5}
+                trend={0}
                 description="Total do último período"
                 iconClassName="bg-lavender-100 dark:bg-lavender-900/30"
               />
               <StatCard
                 title="Faturamento"
-                value="R$ 85.492,30"
+                value="R$ 0,00"
                 icon={DollarSign}
-                trend={8.3}
+                trend={0}
                 description="Total do último período"
                 iconClassName="bg-lingerie-100 dark:bg-lingerie-900/30"
               />
               <StatCard
                 title="Produtos Vendidos"
-                value="2.532"
+                value="0"
                 icon={Package}
-                trend={15.2}
+                trend={0}
                 description="Total do último período"
                 iconClassName="bg-cream-100 dark:bg-cream-900/30"
               />
               <StatCard
                 title="Ticket Médio"
-                value="R$ 68,42"
+                value="R$ 0,00"
                 icon={TrendingUp}
-                trend={3.7}
+                trend={0}
                 description="Média do último período"
                 iconClassName="bg-lingerie-100 dark:bg-lingerie-900/30"
               />
@@ -160,7 +160,7 @@ const Reports = () => {
                 <TabsTrigger value="estoque">Estoque</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="vendas" className="mt-4">
+              <TabsContent value="vendas" className="mt-4 pb-8 mb-10">
                 <Card>
                   <CardHeader>
                     <CardTitle>Gráfico de Vendas</CardTitle>
@@ -223,7 +223,7 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="categorias" className="mt-4">
+              <TabsContent value="categorias" className="mt-4 pb-8 mb-10">
                 <Card>
                   <CardHeader>
                     <CardTitle>Vendas por Categoria</CardTitle>
@@ -275,7 +275,7 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="marketplaces" className="mt-4">
+              <TabsContent value="marketplaces" className="mt-4 pb-8 mb-10">
                 <Card>
                   <CardHeader>
                     <CardTitle>Vendas por Marketplace</CardTitle>
@@ -327,7 +327,7 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="estoque" className="mt-4">
+              <TabsContent value="estoque" className="mt-4 pb-8 mb-10">
                 <Card>
                   <CardHeader>
                     <CardTitle>Estoque vs. Vendas</CardTitle>
@@ -354,7 +354,7 @@ const Reports = () => {
               </TabsContent>
             </Tabs>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
