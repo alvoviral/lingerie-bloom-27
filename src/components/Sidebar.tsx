@@ -11,8 +11,11 @@ import {
   Settings,
   PieChart,
   Package,
-  Calendar
+  Calendar,
+  Calculator
 } from "lucide-react";
+import { useState } from "react";
+import BusinessCalculator from "@/components/settings/BusinessCalculator";
 
 interface SidebarProps {
   className?: string;
@@ -21,6 +24,7 @@ interface SidebarProps {
 const Sidebar = ({ className }: SidebarProps) => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
   
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -73,7 +77,7 @@ const Sidebar = ({ className }: SidebarProps) => {
         ))}
       </nav>
       
-      <div className="mt-auto pt-4 border-t border-sidebar-border">
+      <div className="mt-auto pt-4 border-t border-sidebar-border space-y-1">
         <Link
           to="/dashboard/configuracoes"
           className={cn(
@@ -92,7 +96,31 @@ const Sidebar = ({ className }: SidebarProps) => {
           />
           Configurações
         </Link>
+        
+        {/* Calculadora button right below Configurações */}
+        <button
+          onClick={() => setIsCalculatorOpen(true)}
+          className={cn(
+            "w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg group transition-colors",
+            "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          )}
+        >
+          <Calculator 
+            className={cn(
+              "mr-3 h-5 w-5 flex-shrink-0",
+              "text-sidebar-foreground group-hover:text-sidebar-accent-foreground"
+            )} 
+            aria-hidden="true" 
+          />
+          Calculadora
+        </button>
       </div>
+      
+      {/* Calculadora component */}
+      <BusinessCalculator 
+        isOpen={isCalculatorOpen} 
+        onClose={() => setIsCalculatorOpen(false)} 
+      />
     </div>
   );
 };

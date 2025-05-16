@@ -3,17 +3,15 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/dashboard/StatCard";
-import { Calculator, DollarSign, Download, ShoppingBag, Users, Package } from "lucide-react";
+import { DollarSign, Download, ShoppingBag, Users, Package } from "lucide-react";
 import FinancialSummary from "@/components/dashboard/FinancialSummary";
 import InventorySummary from "@/components/dashboard/InventorySummary";
 import RecentSales from "@/components/dashboard/RecentSales";
 import { Button } from "@/components/ui/button";
 import ExportDialog from "@/components/dashboard/ExportDialog";
-import BusinessCalculator from "@/components/settings/BusinessCalculator";
 
 const Dashboard = () => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
-  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard | BelleCharm";
@@ -33,14 +31,6 @@ const Dashboard = () => {
             />
             
             <div className="flex items-center gap-2 self-start sm:self-center">
-              <Button
-                onClick={() => setIsCalculatorOpen(true)}
-                variant="outline"
-                className="flex items-center gap-2"
-              >
-                <Calculator className="h-4 w-4" />
-                Calculadora
-              </Button>
               <Button
                 onClick={() => setIsExportDialogOpen(true)}
                 variant="outline"
@@ -99,14 +89,6 @@ const Dashboard = () => {
           {/* Mobile buttons - hidden on larger screens */}
           <div className="mt-6 sm:hidden grid grid-cols-2 gap-4">
             <Button
-              onClick={() => setIsCalculatorOpen(true)}
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Calculator className="h-4 w-4" />
-              Calculadora
-            </Button>
-            <Button
               onClick={() => setIsExportDialogOpen(true)}
               variant="outline"
               className="w-full flex items-center justify-center gap-2"
@@ -120,11 +102,6 @@ const Dashboard = () => {
           <ExportDialog 
             isOpen={isExportDialogOpen} 
             onClose={() => setIsExportDialogOpen(false)}
-          />
-          
-          <BusinessCalculator 
-            isOpen={isCalculatorOpen}
-            onClose={() => setIsCalculatorOpen(false)}
           />
         </div>
       </div>
