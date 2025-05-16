@@ -157,7 +157,7 @@ const Whatsapp = () => {
   
   const handleConnect = useCallback(() => {
     if (connectionState.status === "connected") {
-      // Disconnect
+      // Disconnect logic
       if (pingIntervalRef.current) {
         clearInterval(pingIntervalRef.current);
       }
@@ -175,19 +175,22 @@ const Whatsapp = () => {
       ...prev,
       status: "connecting"
     }));
+    
+    // Mostrar QR code imediatamente
     setShowQrCode(true);
     
-    // Set a timeout for the connection attempt
+    // Clear any existing timeout
     if (connectionTimeoutRef.current) {
       clearTimeout(connectionTimeoutRef.current);
     }
     
+    // Set connection timeout (60 seconds)
     connectionTimeoutRef.current = window.setTimeout(() => {
       if (connectionState.status === "connecting") {
         handleConnectionError("timeout");
         setShowQrCode(false);
       }
-    }, 60000); // 60 seconds timeout
+    }, 60000);
   }, [connectionState.status, handleConnectionError]);
   
   const handleScanComplete = useCallback(() => {
@@ -197,15 +200,13 @@ const Whatsapp = () => {
     }
     
     // Simulating connection success after QR scan
-    setTimeout(() => {
-      setConnectionState({
-        status: "connected",
-        reconnectAttempts: 0,
-        maxReconnectAttempts: 3
-      });
-      setShowQrCode(false);
-      toast.success("WhatsApp conectado com sucesso!");
-    }, 2000);
+    setConnectionState({
+      status: "connected",
+      reconnectAttempts: 0,
+      maxReconnectAttempts: 3
+    });
+    setShowQrCode(false);
+    toast.success("WhatsApp conectado com sucesso!");
   }, []);
   
   const handleRefreshQrCode = useCallback(() => {
@@ -213,7 +214,7 @@ const Whatsapp = () => {
     // Simulate QR code refresh
     setTimeout(() => {
       toast.success("Novo QR code gerado!");
-    }, 1500);
+    }, 1000);
   }, []);
 
   const handleSendMessage = useCallback(
@@ -253,8 +254,25 @@ const Whatsapp = () => {
           />
           
           <div className="mt-8">
-            {/* QR Code Dialog */}
-            <Dialog open={showQrCode && connectionState.status === "connecting"} onOpenChange={setShowQrCode}>
+            {/* QR Code Dialog - Garantindo que seja exibido corretamente */}
+            <Dialog 
+              open={showQrCode} 
+              onOpenChange={(open) => {
+                if (!open && connectionState.status === "connecting") {
+                  // Se o diálogo for fechado durante a conexão, cancelar o processo
+                  setConnectionState({
+                    status: "disconnected",
+                    reconnectAttempts: 0,
+                    maxReconnectAttempts: 3
+                  });
+                  
+                  if (connectionTimeoutRef.current) {
+                    clearTimeout(connectionTimeoutRef.current);
+                  }
+                }
+                setShowQrCode(open);
+              }}
+            >
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Conectar ao WhatsApp</DialogTitle>
