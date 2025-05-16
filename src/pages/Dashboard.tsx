@@ -1,14 +1,18 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/dashboard/StatCard";
-import { DollarSign, ShoppingBag, Users, Package } from "lucide-react";
+import { DollarSign, ShoppingBag, Users, Package, Download } from "lucide-react";
 import FinancialSummary from "@/components/dashboard/FinancialSummary";
 import InventorySummary from "@/components/dashboard/InventorySummary";
 import RecentSales from "@/components/dashboard/RecentSales";
+import { Button } from "@/components/ui/button";
+import ExportDialog from "@/components/dashboard/ExportDialog";
 
 const Dashboard = () => {
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+
   useEffect(() => {
     document.title = "Dashboard | BelleCharm";
   }, []);
@@ -19,10 +23,21 @@ const Dashboard = () => {
       
       <div className="flex-1 overflow-auto">
         <div className="p-6 md:p-8">
-          <Header 
-            title="Dashboard" 
-            subtitle="Bem-vinda de volta! Aqui está o resumo do seu negócio hoje." 
-          />
+          <div className="flex justify-between items-start">
+            <Header 
+              title="Dashboard" 
+              subtitle="Bem-vinda de volta! Aqui está o resumo do seu negócio hoje." 
+            />
+            
+            <Button
+              onClick={() => setIsExportDialogOpen(true)}
+              variant="outline"
+              className="hidden sm:flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportar Dados
+            </Button>
+          </div>
           
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
@@ -67,6 +82,24 @@ const Dashboard = () => {
           <div className="mt-6">
             <RecentSales />
           </div>
+
+          {/* Mobile export button */}
+          <div className="mt-6 sm:hidden">
+            <Button
+              onClick={() => setIsExportDialogOpen(true)}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Exportar Dados
+            </Button>
+          </div>
+
+          {/* Export Dialog */}
+          <ExportDialog 
+            isOpen={isExportDialogOpen} 
+            onClose={() => setIsExportDialogOpen(false)}
+          />
         </div>
       </div>
     </div>
