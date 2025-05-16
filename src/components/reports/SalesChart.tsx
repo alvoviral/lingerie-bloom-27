@@ -24,12 +24,12 @@ export const SalesChart = () => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-36">
+    <Card className="mb-12">
       <CardHeader className="pb-0">
         <CardTitle>Gráfico de Vendas</CardTitle>
       </CardHeader>
-      <CardContent className="pb-16">
-        <div className={`${isMobile ? 'h-96' : 'h-120'} w-full relative`}>
+      <CardContent className="pb-6">
+        <div className={`${isMobile ? 'h-64' : 'h-80'} w-full relative`}>
           <ChartContainer
             config={{
               sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -42,7 +42,7 @@ export const SalesChart = () => {
                 top: 20,
                 right: 20,
                 left: 20,
-                bottom: 40,
+                bottom: 20,
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -52,7 +52,7 @@ export const SalesChart = () => {
                 tick={{ fontSize: 14 }}
                 ticks={[0, 1]}
               />
-              <Legend wrapperStyle={{ paddingTop: 20, fontSize: 14, bottom: 0 }} />
+              <Legend wrapperStyle={{ paddingTop: 10, fontSize: 14, bottom: 0 }} />
               <Line
                 type="monotone"
                 dataKey="value"
