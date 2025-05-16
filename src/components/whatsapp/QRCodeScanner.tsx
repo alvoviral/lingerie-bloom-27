@@ -132,10 +132,6 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
               alt="WhatsApp QR Code"
               className="w-full h-full p-2"
             />
-            
-            <div className="absolute bottom-0 w-full text-center text-xs text-gray-500">
-              Escaneie para conectar
-            </div>
           </div>
         ) : (
           <div className="w-full h-full flex items-center justify-center text-red-500">
