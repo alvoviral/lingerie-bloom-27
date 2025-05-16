@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -144,6 +143,7 @@ const Profile = () => {
           .from('profiles')
           .insert({
             id: user.id,
+            full_name: `${values.firstName} ${values.lastName}`,
             first_name: values.firstName,
             last_name: values.lastName,
           });

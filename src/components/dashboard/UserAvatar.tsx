@@ -31,7 +31,7 @@ export const UserAvatar = ({ userId, fallbackInitials = "UR", className = "" }: 
         // Buscar o perfil do usuário
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, avatar_url')
+          .select('*')
           .eq('id', id)
           .single();
 
@@ -44,6 +44,14 @@ export const UserAvatar = ({ userId, fallbackInitials = "UR", className = "" }: 
           // Definir iniciais com base no nome e sobrenome
           if (profile.first_name && profile.last_name) {
             setInitials(`${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase());
+          } else if (profile.full_name) {
+            // Fallback para o nome completo se first_name ou last_name não estiverem presentes
+            const nameParts = profile.full_name.split(' ');
+            if (nameParts.length >= 2) {
+              setInitials(`${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase());
+            } else if (nameParts.length === 1) {
+              setInitials(`${nameParts[0][0]}`.toUpperCase());
+            }
           }
 
           // Buscar URL do avatar se existir
