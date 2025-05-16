@@ -74,9 +74,35 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
           />
         </div>
         
+        {/* Order rearranged: user profile (highest z-index), then notifications, then other elements */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="relative">
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
+              <Avatar>
+                <AvatarImage src="/placeholder.svg" />
+                <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-30">
+            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              className="cursor-pointer text-red-500 focus:text-red-500" 
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? "Saindo..." : "Sair"}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon" className="relative z-20">
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <Badge 
@@ -88,7 +114,7 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuContent align="end" className="w-80 z-20">
             <div className="flex justify-between items-center px-2">
               <DropdownMenuLabel>Notificações</DropdownMenuLabel>
               {unreadCount > 0 && (
@@ -143,31 +169,6 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
                 </div>
               )}
             </ScrollArea>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar>
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="cursor-pointer text-red-500 focus:text-red-500" 
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-            >
-              {isLoggingOut ? "Saindo..." : "Sair"}
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

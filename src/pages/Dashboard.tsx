@@ -34,7 +34,7 @@ const Dashboard = () => {
               <Button
                 onClick={() => setIsExportDialogOpen(true)}
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 z-10"
               >
                 <Download className="h-4 w-4" />
                 Exportar Dados
@@ -91,7 +91,7 @@ const Dashboard = () => {
             <Button
               onClick={() => setIsExportDialogOpen(true)}
               variant="outline"
-              className="w-full flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2 z-10"
             >
               <Download className="h-4 w-4" />
               Exportar Dados
