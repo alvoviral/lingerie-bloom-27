@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 const data = [
-  { name: 'Sutiãs', value: 35, color: '#EC4899' },
-  { name: 'Calcinhas', value: 45, color: '#8B5CF6' },
-  { name: 'Conjuntos', value: 20, color: '#F59E0B' },
+  { name: 'Sutiãs', value: 0, color: '#EC4899' },
+  { name: 'Calcinhas', value: 0, color: '#8B5CF6' },
+  { name: 'Conjuntos', value: 0, color: '#F59E0B' },
 ];
 
 const COLORS = ['#EC4899', '#8B5CF6', '#F59E0B'];
@@ -46,19 +46,19 @@ const InventorySummary = () => {
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Total de Itens</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
-              187
+              0
             </p>
           </div>
           <div className="rounded-lg bg-lavender-50 dark:bg-lavender-900/20 p-2">
             <p className="text-xs text-muted-foreground">Estoque Baixo</p>
             <p className="text-lg font-semibold font-playfair text-lavender-600 dark:text-lavender-300">
-              12
+              0
             </p>
           </div>
           <div className="rounded-lg bg-cream-50 dark:bg-cream-900/20 p-2">
             <p className="text-xs text-muted-foreground">Valor Total</p>
             <p className="text-lg font-semibold font-playfair text-cream-600 dark:text-cream-300">
-              R$ 24.350
+              R$ 0,00
             </p>
           </div>
         </div>

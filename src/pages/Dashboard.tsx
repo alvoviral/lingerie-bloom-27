@@ -27,34 +27,34 @@ const Dashboard = () => {
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               title="Vendas do Mês"
-              value="R$ 12.850,00"
-              description="23 pedidos este mês"
+              value="R$ 0,00"
+              description="0 pedidos este mês"
               icon={ShoppingBag}
-              trend={12}
+              trend={0}
               iconClassName="bg-lingerie-100 dark:bg-lingerie-900/30"
             />
             <StatCard
               title="Receita Total"
-              value="R$ 45.320,00"
+              value="R$ 0,00"
               description="Este ano"
               icon={DollarSign}
-              trend={7}
+              trend={0}
               iconClassName="bg-green-100 dark:bg-green-900/30"
             />
             <StatCard
               title="Clientes Ativos"
-              value="178"
-              description="12 novos este mês"
+              value="0"
+              description="0 novos este mês"
               icon={Users}
-              trend={4}
+              trend={0}
               iconClassName="bg-lavender-100 dark:bg-lavender-900/30"
             />
             <StatCard
               title="Produtos em Estoque"
-              value="187"
-              description="12 com estoque crítico"
+              value="0"
+              description="0 com estoque crítico"
               icon={Package}
-              trend={-3}
+              trend={0}
               iconClassName="bg-cream-100 dark:bg-cream-900/30"
             />
           </div>

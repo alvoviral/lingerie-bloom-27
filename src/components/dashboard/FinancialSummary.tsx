@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Jan', receita: 4000, despesas: 2400 },
-  { name: 'Fev', receita: 3000, despesas: 1398 },
-  { name: 'Mar', receita: 2000, despesas: 9800 },
-  { name: 'Abr', receita: 2780, despesas: 3908 },
-  { name: 'Mai', receita: 1890, despesas: 4800 },
-  { name: 'Jun', receita: 2390, despesas: 3800 },
-  { name: 'Jul', receita: 3490, despesas: 4300 },
+  { name: 'Jan', receita: 0, despesas: 0 },
+  { name: 'Fev', receita: 0, despesas: 0 },
+  { name: 'Mar', receita: 0, despesas: 0 },
+  { name: 'Abr', receita: 0, despesas: 0 },
+  { name: 'Mai', receita: 0, despesas: 0 },
+  { name: 'Jun', receita: 0, despesas: 0 },
+  { name: 'Jul', receita: 0, despesas: 0 },
 ];
 
 const FinancialSummary = () => {
@@ -75,13 +75,13 @@ const FinancialSummary = () => {
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Receita Total</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
-              R$ 17.550,00
+              R$ 0,00
             </p>
           </div>
           <div className="rounded-lg bg-lavender-50 dark:bg-lavender-900/20 p-2">
             <p className="text-xs text-muted-foreground">Despesas Totais</p>
             <p className="text-lg font-semibold font-playfair text-lavender-600 dark:text-lavender-300">
-              R$ 6.700,00
+              R$ 0,00
             </p>
           </div>
         </div>

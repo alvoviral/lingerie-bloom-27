@@ -13,55 +13,43 @@ import { ChartContainer, ChartTooltipContent, ChartTooltip } from "@/components/
 import { ArrowUp, ArrowDown, Receipt, Wallet } from "lucide-react";
 
 const revenueData = [
-  { name: 'Jan', receita: 4500, lucro: 1800 },
-  { name: 'Fev', receita: 5200, lucro: 2100 },
-  { name: 'Mar', receita: 3800, lucro: 1500 },
-  { name: 'Abr', receita: 6500, lucro: 2600 },
-  { name: 'Mai', receita: 5800, lucro: 2300 },
-  { name: 'Jun', receita: 6200, lucro: 2500 },
-  { name: 'Jul', receita: 7100, lucro: 2800 },
+  { name: 'Jan', receita: 0, lucro: 0 },
+  { name: 'Fev', receita: 0, lucro: 0 },
+  { name: 'Mar', receita: 0, lucro: 0 },
+  { name: 'Abr', receita: 0, lucro: 0 },
+  { name: 'Mai', receita: 0, lucro: 0 },
+  { name: 'Jun', receita: 0, lucro: 0 },
+  { name: 'Jul', receita: 0, lucro: 0 },
 ];
 
 const expenseData = [
-  { categoria: 'Produtos', valor: 8500 },
-  { categoria: 'Marketing', valor: 1200 },
-  { categoria: 'Embalagens', valor: 800 },
-  { categoria: 'Taxas Market', valor: 1500 },
-  { categoria: 'Entregas', valor: 1100 },
+  { categoria: 'Produtos', valor: 0 },
+  { categoria: 'Marketing', valor: 0 },
+  { categoria: 'Embalagens', valor: 0 },
+  { categoria: 'Taxas Market', valor: 0 },
+  { categoria: 'Entregas', valor: 0 },
 ];
 
 const salesByCategoryData = [
-  { categoria: 'Sutiãs', valor: 12500 },
-  { categoria: 'Calcinhas', valor: 9800 },
-  { categoria: 'Conjuntos', valor: 15200 },
-  { categoria: 'Lingeries', valor: 7300 },
-  { categoria: 'Acessórios', valor: 2100 },
+  { categoria: 'Sutiãs', valor: 0 },
+  { categoria: 'Calcinhas', valor: 0 },
+  { categoria: 'Conjuntos', valor: 0 },
+  { categoria: 'Lingeries', valor: 0 },
+  { categoria: 'Acessórios', valor: 0 },
 ];
 
-// Dados para a aba de Receitas
-const revenueTransactions = [
-  { id: '1', date: '15/05/2025', description: 'Venda Online #1254', amount: 250.00, category: 'Loja Online' },
-  { id: '2', date: '14/05/2025', description: 'Venda Instagram #768', amount: 189.90, category: 'Instagram' },
-  { id: '3', date: '12/05/2025', description: 'Venda Marketplace #4521', amount: 320.50, category: 'Marketplace' },
-  { id: '4', date: '10/05/2025', description: 'Venda Varejo #121', amount: 450.00, category: 'Loja Física' },
-  { id: '5', date: '08/05/2025', description: 'Venda Online #1242', amount: 275.00, category: 'Loja Online' }
-];
+// Dados para a aba de Receitas - zerados
+const revenueTransactions = [];
 
 const revenueCategories = [
-  { name: 'Loja Online', value: 2850, color: '#EC4899' },
-  { name: 'Instagram', value: 1890, color: '#8B5CF6' },
-  { name: 'Marketplace', value: 3250, color: '#3B82F6' },
-  { name: 'Loja Física', value: 2100, color: '#10B981' }
+  { name: 'Loja Online', value: 0, color: '#EC4899' },
+  { name: 'Instagram', value: 0, color: '#8B5CF6' },
+  { name: 'Marketplace', value: 0, color: '#3B82F6' },
+  { name: 'Loja Física', value: 0, color: '#10B981' }
 ];
 
-// Dados para a aba de Despesas
-const expenseTransactions = [
-  { id: '1', date: '16/05/2025', description: 'Compra de Estoque', amount: 1200.00, category: 'Produtos' },
-  { id: '2', date: '15/05/2025', description: 'Anúncios Facebook', amount: 350.00, category: 'Marketing' },
-  { id: '3', date: '12/05/2025', description: 'Embalagens Premium', amount: 180.50, category: 'Embalagens' },
-  { id: '4', date: '10/05/2025', description: 'Comissão Shopee', amount: 120.00, category: 'Taxas Market' },
-  { id: '5', date: '08/05/2025', description: 'Serviço de Entrega', amount: 95.00, category: 'Entregas' }
-];
+// Dados para a aba de Despesas - zerados
+const expenseTransactions = [];
 
 const Finance = () => {
   useEffect(() => {
@@ -141,8 +129,8 @@ const Finance = () => {
   };
 
   // Calculos de totais
-  const totalRevenue = revenues.reduce((sum, item) => sum + item.amount, 0);
-  const totalExpense = expenses.reduce((sum, item) => sum + item.amount, 0);
+  const totalRevenue = revenues.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const totalExpense = expenses.reduce((sum, item) => sum + (item.amount || 0), 0);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -284,7 +272,7 @@ const Finance = () => {
                         <div className="flex items-center text-sm font-medium text-muted-foreground">
                           <span className="flex items-center mr-2 text-emerald-500">
                             <ArrowUp className="w-4 h-4 mr-1" />
-                            12%
+                            0%
                           </span>
                           vs. mês anterior
                         </div>
@@ -306,28 +294,34 @@ const Finance = () => {
                         </div>
                         
                         <div className="mt-6">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Data</TableHead>
-                                <TableHead>Descrição</TableHead>
-                                <TableHead>Categoria</TableHead>
-                                <TableHead className="text-right">Valor</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {revenues.map((revenue) => (
-                                <TableRow key={revenue.id}>
-                                  <TableCell>{revenue.date}</TableCell>
-                                  <TableCell>{revenue.description}</TableCell>
-                                  <TableCell>{revenue.category}</TableCell>
-                                  <TableCell className="text-right font-medium">
-                                    R$ {revenue.amount.toFixed(2)}
-                                  </TableCell>
+                          {revenues.length > 0 ? (
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Data</TableHead>
+                                  <TableHead>Descrição</TableHead>
+                                  <TableHead>Categoria</TableHead>
+                                  <TableHead className="text-right">Valor</TableHead>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
+                              </TableHeader>
+                              <TableBody>
+                                {revenues.map((revenue) => (
+                                  <TableRow key={revenue.id}>
+                                    <TableCell>{revenue.date}</TableCell>
+                                    <TableCell>{revenue.description}</TableCell>
+                                    <TableCell>{revenue.category}</TableCell>
+                                    <TableCell className="text-right font-medium">
+                                      R$ {revenue.amount?.toFixed(2)}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                              Nenhuma receita registrada ainda
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                       <CardFooter className="border-t bg-muted/30 flex justify-between">
@@ -437,7 +431,7 @@ const Finance = () => {
                         <div className="flex items-center text-sm font-medium text-muted-foreground">
                           <span className="flex items-center mr-2 text-red-500">
                             <ArrowDown className="w-4 h-4 mr-1" />
-                            5%
+                            0%
                           </span>
                           vs. mês anterior
                         </div>
@@ -467,28 +461,34 @@ const Finance = () => {
                         </div>
                         
                         <div className="mt-6">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead>Data</TableHead>
-                                <TableHead>Descrição</TableHead>
-                                <TableHead>Categoria</TableHead>
-                                <TableHead className="text-right">Valor</TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {expenses.map((expense) => (
-                                <TableRow key={expense.id}>
-                                  <TableCell>{expense.date}</TableCell>
-                                  <TableCell>{expense.description}</TableCell>
-                                  <TableCell>{expense.category}</TableCell>
-                                  <TableCell className="text-right font-medium text-red-500">
-                                    R$ {expense.amount.toFixed(2)}
-                                  </TableCell>
+                          {expenses.length > 0 ? (
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Data</TableHead>
+                                  <TableHead>Descrição</TableHead>
+                                  <TableHead>Categoria</TableHead>
+                                  <TableHead className="text-right">Valor</TableHead>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
+                              </TableHeader>
+                              <TableBody>
+                                {expenses.map((expense) => (
+                                  <TableRow key={expense.id}>
+                                    <TableCell>{expense.date}</TableCell>
+                                    <TableCell>{expense.description}</TableCell>
+                                    <TableCell>{expense.category}</TableCell>
+                                    <TableCell className="text-right font-medium text-red-500">
+                                      R$ {expense.amount?.toFixed(2)}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          ) : (
+                            <div className="text-center py-8 text-muted-foreground">
+                              Nenhuma despesa registrada ainda
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                       <CardFooter className="border-t bg-muted/30 flex justify-between">
@@ -577,13 +577,13 @@ const Finance = () => {
                           <div className="flex justify-between items-center py-1">
                             <span className="text-sm font-medium">Maior despesa</span>
                             <span className="font-semibold">
-                              R$ {Math.max(...expenses.map(e => e.amount)).toFixed(2)}
+                              R$ {expenses.length ? Math.max(...expenses.map(e => e.amount || 0)).toFixed(2) : "0.00"}
                             </span>
                           </div>
                           <div className="flex justify-between items-center py-1">
                             <span className="text-sm font-medium">Orçamento restante</span>
                             <span className="font-semibold text-amber-500">
-                              R$ {(10000 - totalExpense).toFixed(2)}
+                              R$ {(0 - totalExpense).toFixed(2)}
                             </span>
                           </div>
                         </div>

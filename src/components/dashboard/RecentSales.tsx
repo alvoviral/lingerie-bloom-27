@@ -4,44 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const salesData = [
-  {
-    id: 1,
-    customer: "Maria Silva",
-    product: "Conjunto Renda Floral",
-    amount: "R$ 149,90",
-    date: "12/05/2025",
-    status: "Pago",
-    marketplace: "Shopee"
-  },
-  {
-    id: 2,
-    customer: "Ana Paula Santos",
-    product: "Sutiã Push-up Cetim",
-    amount: "R$ 89,90",
-    date: "11/05/2025",
-    status: "Em processamento",
-    marketplace: "Mercado Livre"
-  },
-  {
-    id: 3,
-    customer: "Carolina Mendes",
-    product: "Kit 3 Calcinhas Brasileira",
-    amount: "R$ 79,90",
-    date: "10/05/2025",
-    status: "Enviado",
-    marketplace: "Loja Própria"
-  },
-  {
-    id: 4,
-    customer: "Juliana Costa",
-    product: "Conjunto Rendado Premium",
-    amount: "R$ 219,90",
-    date: "09/05/2025",
-    status: "Entregue",
-    marketplace: "Magazine Luiza"
-  },
-];
+const salesData: any[] = []; // Empty array since there are no real sales yet
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -81,28 +44,35 @@ const RecentSales = () => {
         <ShoppingCart className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {salesData.map((sale) => (
-            <div key={sale.id} className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0">
-              <div className="space-y-1">
-                <p className="text-sm font-medium">{sale.customer}</p>
-                <p className="text-xs text-muted-foreground">{sale.product}</p>
-                <div className="flex gap-2">
-                  <Badge variant="outline" className={cn("text-xs font-normal", getStatusColor(sale.status))}>
-                    {sale.status}
-                  </Badge>
-                  <Badge variant="outline" className={cn("text-xs font-normal", getMarketplaceColor(sale.marketplace))}>
-                    {sale.marketplace}
-                  </Badge>
+        {salesData.length > 0 ? (
+          <div className="space-y-4">
+            {salesData.map((sale) => (
+              <div key={sale.id} className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{sale.customer}</p>
+                  <p className="text-xs text-muted-foreground">{sale.product}</p>
+                  <div className="flex gap-2">
+                    <Badge variant="outline" className={cn("text-xs font-normal", getStatusColor(sale.status))}>
+                      {sale.status}
+                    </Badge>
+                    <Badge variant="outline" className={cn("text-xs font-normal", getMarketplaceColor(sale.marketplace))}>
+                      {sale.marketplace}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium">{sale.amount}</p>
+                  <p className="text-xs text-muted-foreground">{sale.date}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium">{sale.amount}</p>
-                <p className="text-xs text-muted-foreground">{sale.date}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground">Nenhuma venda registrada ainda</p>
+            <p className="text-xs text-muted-foreground mt-2">As vendas aparecerão aqui quando começar a registrá-las</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

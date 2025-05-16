@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -99,9 +98,9 @@ const Marketplaces = () => {
             ...marketplace,
             connected: true,
             stats: {
-              sales: Math.floor(Math.random() * 100),
-              revenue: Math.floor(Math.random() * 10000),
-              orders: Math.floor(Math.random() * 50),
+              sales: 0,
+              revenue: 0,
+              orders: 0,
             },
           };
         }
@@ -125,22 +124,7 @@ const Marketplaces = () => {
       setSyncing(null);
       toast.success(`Dados do ${marketplaces.find(m => m.id === marketplaceId)?.name} sincronizados com sucesso!`);
       
-      // Update stats with new random data to simulate sync
-      setMarketplaces(
-        marketplaces.map((marketplace) => {
-          if (marketplace.id === marketplaceId) {
-            return {
-              ...marketplace,
-              stats: {
-                sales: Math.floor(Math.random() * 100),
-                revenue: Math.floor(Math.random() * 10000),
-                orders: Math.floor(Math.random() * 50),
-              },
-            };
-          }
-          return marketplace;
-        })
-      );
+      // Não atualizamos com dados fictícios
     }, 2000);
   };
 
