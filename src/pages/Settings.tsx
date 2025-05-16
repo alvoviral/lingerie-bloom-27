@@ -9,6 +9,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Edit, Trash2 } from "lucide-react";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  initials: string;
+}
 
 const Settings = () => {
   useEffect(() => {
@@ -28,6 +40,28 @@ const Settings = () => {
     customerMessagesNotifications: false,
     financialReportsNotifications: true
   });
+  
+  // User management state
+  const [users, setUsers] = useState<User[]>([
+    {
+      id: "1",
+      name: "Ana Carolina",
+      email: "ana@bellecharm.com.br",
+      role: "Administrador",
+      initials: "AC"
+    },
+    {
+      id: "2",
+      name: "Mariana Ribeiro",
+      email: "mariana@bellecharm.com.br",
+      role: "Vendedor",
+      initials: "MR"
+    }
+  ]);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [editedUser, setEditedUser] = useState<Partial<User>>({});
 
   const handleStoreSettingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,6 +86,60 @@ const Settings = () => {
   const saveNotificationSettings = () => {
     // Simular salvamento
     toast.success("Configurações de notificações atualizadas com sucesso!");
+  };
+
+  // User management functions
+  const openEditDialog = (user: User) => {
+    setCurrentUser(user);
+    setEditedUser({...user});
+    setIsEditDialogOpen(true);
+  };
+
+  const openDeleteDialog = (user: User) => {
+    setCurrentUser(user);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleUserEdit = () => {
+    if (!currentUser || !editedUser.name || !editedUser.email || !editedUser.role) return;
+    
+    // Get initials from name
+    const initials = editedUser.name
+      .split(' ')
+      .slice(0, 2)
+      .map(name => name.charAt(0))
+      .join('');
+    
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === currentUser.id 
+          ? { ...user, 
+              name: editedUser.name || user.name, 
+              email: editedUser.email || user.email, 
+              role: editedUser.role || user.role,
+              initials: initials
+            } 
+          : user
+      )
+    );
+    
+    setIsEditDialogOpen(false);
+    toast.success("Usuário atualizado com sucesso!");
+  };
+
+  const handleUserDelete = () => {
+    if (!currentUser) return;
+    
+    setUsers(prevUsers => prevUsers.filter(user => user.id !== currentUser.id));
+    setIsDeleteDialogOpen(false);
+    toast.success("Usuário excluído com sucesso!");
+  };
+
+  const handleEditChange = (field: keyof User, value: string) => {
+    setEditedUser(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -248,34 +336,40 @@ const Settings = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full bg-lingerie-100 flex items-center justify-center">
-                              <span className="font-medium text-lingerie-700">AC</span>
+                      {users.map(user => (
+                        <div key={user.id} className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="h-10 w-10 rounded-full bg-lingerie-100 flex items-center justify-center">
+                                <span className="font-medium text-lingerie-700">{user.initials}</span>
+                              </div>
+                              <div>
+                                <h4 className="font-medium">{user.name}</h4>
+                                <p className="text-sm text-muted-foreground">{user.email} ({user.role})</p>
+                              </div>
                             </div>
-                            <div>
-                              <h4 className="font-medium">Ana Carolina</h4>
-                              <p className="text-sm text-muted-foreground">ana@bellecharm.com.br (Administrador)</p>
+                            <div className="flex space-x-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => openEditDialog(user)}
+                              >
+                                <Edit className="h-4 w-4 mr-1" />
+                                Editar
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                onClick={() => openDeleteDialog(user)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1" />
+                                Excluir
+                              </Button>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">Editar</Button>
                         </div>
-                      </div>
-                      <div className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="h-10 w-10 rounded-full bg-lingerie-100 flex items-center justify-center">
-                              <span className="font-medium text-lingerie-700">MR</span>
-                            </div>
-                            <div>
-                              <h4 className="font-medium">Mariana Ribeiro</h4>
-                              <p className="text-sm text-muted-foreground">mariana@bellecharm.com.br (Vendedor)</p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm">Editar</Button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -287,6 +381,74 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Edição de Usuário */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Editar Usuário</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="user-name">Nome</Label>
+              <Input 
+                id="user-name" 
+                value={editedUser.name || ''}
+                onChange={(e) => handleEditChange('name', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="user-email">Email</Label>
+              <Input 
+                id="user-email" 
+                type="email"
+                value={editedUser.email || ''}
+                onChange={(e) => handleEditChange('email', e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="user-role">Função</Label>
+              <Select 
+                value={editedUser.role} 
+                onValueChange={(value) => handleEditChange('role', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione uma função" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Administrador">Administrador</SelectItem>
+                  <SelectItem value="Vendedor">Vendedor</SelectItem>
+                  <SelectItem value="Estoquista">Estoquista</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={handleUserEdit}>Salvar Alterações</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Usuário</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o usuário "{currentUser?.name}"? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUserDelete} className="bg-red-500 hover:bg-red-600">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
