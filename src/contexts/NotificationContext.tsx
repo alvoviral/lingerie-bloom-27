@@ -53,41 +53,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     setUnreadCount(count);
   }, [notifications]);
 
-  // Simular recebimento de notificações dos marketplaces conectados
-  useEffect(() => {
-    // Criar um intervalo para simular novas notificações a cada 30-90 segundos (apenas para demonstração)
-    const marketplaces = ["Shopee", "Mercado Livre", "Magazine Luiza", "Casas Bahia"];
-    const products = [
-      "Conjunto Rendado Floral", 
-      "Sutiã Push-up", 
-      "Body de Renda", 
-      "Lingerie Cetim Premium",
-      "Kit Calcinhas"
-    ];
-    
-    const intervalId = setInterval(() => {
-      // Verificar se há pelo menos um marketplace para simular (em um caso real, isso dependeria de API)
-      if (marketplaces.length > 0) {
-        // Chance de 20% de gerar uma notificação de venda
-        if (Math.random() < 0.2) {
-          const randomMarketplace = marketplaces[Math.floor(Math.random() * marketplaces.length)];
-          const randomProduct = products[Math.floor(Math.random() * products.length)];
-          const randomOrderNumber = Math.floor(10000 + Math.random() * 90000);
-          
-          const newNotification = {
-            title: "Novo pedido recebido",
-            message: `${randomMarketplace} - ${randomProduct} #${randomOrderNumber}`,
-            source: randomMarketplace,
-            type: "order" as const
-          };
-          
-          addNotification(newNotification);
-        }
-      }
-    }, Math.floor(30000 + Math.random() * 60000)); // Entre 30 e 90 segundos
-    
-    return () => clearInterval(intervalId);
-  }, []);
+  // Removido o useEffect que simulava o recebimento de notificações automáticas
 
   const addNotification = (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
     const newNotification: Notification = {
@@ -100,7 +66,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     setNotifications(prev => [newNotification, ...prev]);
     
     // Exibir toast para novas notificações
-    toast(notification.title, {
+    toast.success(notification.title, {
       description: notification.message,
     });
   };
