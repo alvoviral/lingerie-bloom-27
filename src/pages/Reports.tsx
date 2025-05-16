@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -161,15 +162,14 @@ const Reports = () => {
                 <TabsTrigger value="estoque">Estoque</TabsTrigger>
               </TabsList>
               
-              {/* Further reduced chart heights and adjusted margins for all tabs */}
               <TabsContent value="vendas" className="mt-4">
                 <Card>
                   <CardHeader className="pb-0">
                     <CardTitle>Gráfico de Vendas</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    {/* Further reduced chart height to prevent overflow */}
-                    <div className={`${isMobile ? 'h-40' : 'h-44'} mt-1`}>
+                    {/* Further reduced chart height with additional bottom margin */}
+                    <div className={`${isMobile ? 'h-36' : 'h-40'} mt-1 mb-8`}>
                       <ChartContainer
                         config={{
                           sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -182,7 +182,7 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 0 : 5,
+                            bottom: isMobile ? 5 : 10,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -363,8 +363,8 @@ const Reports = () => {
                     <CardTitle>Estoque vs. Vendas</CardTitle>
                   </CardHeader>
                   <CardContent className="pb-2">
-                    {/* Further reduced chart height to prevent overflow */}
-                    <div className={`${isMobile ? 'h-40' : 'h-44'} mt-1`}>
+                    {/* Further reduced chart height with additional bottom margin */}
+                    <div className={`${isMobile ? 'h-36' : 'h-40'} mt-1 mb-8`}>
                       <ChartContainer
                         config={{
                           estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
@@ -377,7 +377,7 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 0 : 5,
+                            bottom: isMobile ? 5 : 10,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />

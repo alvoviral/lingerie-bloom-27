@@ -20,8 +20,8 @@ const InventorySummary = () => {
         <CardTitle className="text-lg font-medium">Resumo do Estoque</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Reduced height for chart container */}
-        <div className={`${isMobile ? 'h-[180px]' : 'h-[200px]'}`}>
+        {/* Further reduced height for chart container with extra bottom margin */}
+        <div className={`${isMobile ? 'h-[160px]' : 'h-[180px]'} mb-8`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <Pie
@@ -29,7 +29,7 @@ const InventorySummary = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                outerRadius={isMobile ? 60 : 70}
+                outerRadius={isMobile ? 55 : 65}
                 fill="#8884d8"
                 dataKey="value"
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -46,8 +46,8 @@ const InventorySummary = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        {/* Increased margin-top to create more space between chart and cards */}
-        <div className="mt-6 grid grid-cols-3 gap-2 text-center text-xs">
+        {/* Significantly increased margin-top to create more space between chart and cards */}
+        <div className="mt-10 grid grid-cols-3 gap-2 text-center text-xs">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Total de Itens</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
