@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Calculator, PlusCircle, MinusCircle, DollarSign, Percent } from "lucide-react";
+import { Calculator, PlusCircle, MinusCircle, DollarSign, Percent, Store } from "lucide-react";
 import { Product } from "@/types/inventory";
 
 interface BusinessCalculatorProps {
@@ -29,6 +29,16 @@ interface BusinessCalculatorProps {
 }
 
 type CalculationType = 'profit' | 'cost' | 'expenses' | 'revenue';
+type MarketplaceType = 'shopee' | 'mercadolivre' | 'magalu' | 'casasbahia' | 'lojapropia' | '';
+
+interface MarketplaceConfig {
+  name: string;
+  feePercentage: number; // Taxa percentual da plataforma
+  fixedFee: number; // Taxa fixa por venda
+  shippingFee: number; // Contribuição no frete
+  icon: JSX.Element;
+}
+
 const mockProducts: Product[] = [
   {
     id: "1",
@@ -68,6 +78,16 @@ const mockProducts: Product[] = [
   },
 ];
 
+// Configurações de cada marketplace
+const marketplaceConfigs: Record<MarketplaceType, MarketplaceConfig> = {
+  '': { name: "Personalizado", feePercentage: 0, fixedFee: 0, shippingFee: 0, icon: <Calculator className="h-5 w-5" /> },
+  'shopee': { name: "Shopee", feePercentage: 18, fixedFee: 2, shippingFee: 15, icon: <Store className="h-5 w-5 text-orange-500" /> },
+  'mercadolivre': { name: "Mercado Livre", feePercentage: 16, fixedFee: 5, shippingFee: 20, icon: <Store className="h-5 w-5 text-yellow-500" /> },
+  'magalu': { name: "Magazine Luiza", feePercentage: 14, fixedFee: 3, shippingFee: 18, icon: <Store className="h-5 w-5 text-blue-500" /> },
+  'casasbahia': { name: "Casas Bahia", feePercentage: 15, fixedFee: 4, shippingFee: 22, icon: <Store className="h-5 w-5 text-red-500" /> },
+  'lojapropia': { name: "Loja Própria", feePercentage: 3, fixedFee: 0, shippingFee: 12, icon: <Store className="h-5 w-5 text-green-500" /> },
+};
+
 const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
   const [calculationType, setCalculationType] = useState<CalculationType>('profit');
   const [selectedProduct, setSelectedProduct] = useState<string>("");
@@ -76,6 +96,20 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
   const [customCost, setCustomCost] = useState<number>(0);
   const [result, setResult] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [selectedMarketplace, setSelectedMarketplace] = useState<MarketplaceType>('');
+  const [marketplaceDetails, setMarketplaceDetails] = useState<{
+    platformFee: number;
+    shippingCost: number;
+    netProfit: number;
+    profitMargin: number;
+  } | null>(null);
+
+  // Atualiza os cálculos quando os inputs mudam
+  useEffect(() => {
+    if (selectedProduct || (customPrice > 0 && customCost > 0)) {
+      handleCalculate();
+    }
+  }, [selectedProduct, quantity, customPrice, customCost, calculationType, selectedMarketplace]);
 
   const handleCalculate = () => {
     setIsCalculating(true);
@@ -83,53 +117,107 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
       try {
         let calculatedResult = 0;
         const selectedProductData = mockProducts.find(p => p.id === selectedProduct);
+        const marketplaceConfig = marketplaceConfigs[selectedMarketplace];
         
+        // Valores do produto selecionado ou personalizados
+        const productPrice = selectedProductData ? selectedProductData.price : customPrice;
+        const productCost = selectedProductData ? selectedProductData.cost : customCost;
+        
+        // Cálculos com base no tipo de cálculo escolhido
         switch (calculationType) {
           case 'profit':
-            if (selectedProduct) {
-              if (selectedProductData) {
-                // Lucro por produto = (Preço - Custo) * Quantidade
-                calculatedResult = (selectedProductData.price - selectedProductData.cost) * quantity;
-              }
+            // Cálculo básico de lucro
+            calculatedResult = (productPrice - productCost) * quantity;
+            
+            // Se um marketplace foi selecionado, aplicar taxas
+            if (selectedMarketplace) {
+              const platformFee = (productPrice * marketplaceConfig.feePercentage / 100) * quantity;
+              const fixedFee = marketplaceConfig.fixedFee * quantity;
+              const shippingCost = marketplaceConfig.shippingFee;
+              
+              calculatedResult = (productPrice * quantity) - (productCost * quantity) - platformFee - fixedFee - shippingCost;
+              
+              // Detalhes do cálculo para exibição
+              setMarketplaceDetails({
+                platformFee: platformFee + fixedFee,
+                shippingCost: shippingCost,
+                netProfit: calculatedResult,
+                profitMargin: (calculatedResult / (productPrice * quantity)) * 100
+              });
             } else {
-              // Cálculo com valores personalizados
-              calculatedResult = (customPrice - customCost) * quantity;
+              setMarketplaceDetails(null);
             }
             break;
+            
           case 'cost':
-            if (selectedProduct) {
-              if (selectedProductData) {
-                // Custo total = Custo unitário * Quantidade
-                calculatedResult = selectedProductData.cost * quantity;
-              }
+            calculatedResult = productCost * quantity;
+            
+            if (selectedMarketplace) {
+              const platformFee = (productPrice * marketplaceConfig.feePercentage / 100) * quantity;
+              const fixedFee = marketplaceConfig.fixedFee * quantity;
+              const shippingCost = marketplaceConfig.shippingFee;
+              
+              // Custo total = custo de produto + taxas da plataforma + frete
+              calculatedResult = (productCost * quantity) + platformFee + fixedFee + shippingCost;
+              
+              setMarketplaceDetails({
+                platformFee: platformFee + fixedFee,
+                shippingCost: shippingCost,
+                netProfit: (productPrice * quantity) - calculatedResult,
+                profitMargin: (((productPrice * quantity) - calculatedResult) / (productPrice * quantity)) * 100
+              });
             } else {
-              calculatedResult = customCost * quantity;
+              setMarketplaceDetails(null);
             }
             break;
+            
           case 'expenses':
-            if (selectedProduct) {
-              if (selectedProductData) {
-                // Para fins de exemplo, consideramos despesas como 10% do custo total
-                calculatedResult = (selectedProductData.cost * quantity) * 1.1;
-              }
+            if (selectedMarketplace) {
+              const platformFee = (productPrice * marketplaceConfig.feePercentage / 100) * quantity;
+              const fixedFee = marketplaceConfig.fixedFee * quantity;
+              const shippingCost = marketplaceConfig.shippingFee;
+              
+              // Despesas = taxas + frete (não incluindo o custo do produto)
+              calculatedResult = platformFee + fixedFee + shippingCost;
+              
+              setMarketplaceDetails({
+                platformFee: platformFee + fixedFee,
+                shippingCost: shippingCost,
+                netProfit: (productPrice * quantity) - (productCost * quantity) - calculatedResult,
+                profitMargin: (((productPrice * quantity) - (productCost * quantity) - calculatedResult) / (productPrice * quantity)) * 100
+              });
             } else {
-              calculatedResult = customCost * quantity * 1.1;
+              // Para casos sem marketplace, consideramos despesas como 10% do custo total
+              calculatedResult = (productCost * quantity) * 0.1;
+              setMarketplaceDetails(null);
             }
             break;
+            
           case 'revenue':
-            if (selectedProduct) {
-              if (selectedProductData) {
-                // Receita total = Preço * Quantidade
-                calculatedResult = selectedProductData.price * quantity;
-              }
+            // Receita bruta
+            calculatedResult = productPrice * quantity;
+            
+            if (selectedMarketplace) {
+              const platformFee = (productPrice * marketplaceConfig.feePercentage / 100) * quantity;
+              const fixedFee = marketplaceConfig.fixedFee * quantity;
+              
+              // Detalhes para receita - quanto vai efetivamente para você após taxas
+              setMarketplaceDetails({
+                platformFee: platformFee + fixedFee,
+                shippingCost: marketplaceConfig.shippingFee,
+                netProfit: calculatedResult - platformFee - fixedFee - marketplaceConfig.shippingFee,
+                profitMargin: ((calculatedResult - platformFee - fixedFee - marketplaceConfig.shippingFee) / calculatedResult) * 100
+              });
             } else {
-              calculatedResult = customPrice * quantity;
+              setMarketplaceDetails(null);
             }
             break;
         }
 
         setResult(Number(calculatedResult.toFixed(2)));
-        toast.success("Cálculo realizado com sucesso!");
+        if (calculatedResult > 0) {
+          toast.success("Cálculo realizado com sucesso!");
+        }
       } catch (error) {
         console.error("Erro ao calcular:", error);
         toast.error("Erro ao realizar o cálculo. Tente novamente.");
@@ -137,7 +225,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
       } finally {
         setIsCalculating(false);
       }
-    }, 500); // Simula um breve processamento
+    }, 300); // Tempo reduzido para simulação
   };
 
   const getResultLabel = () => {
@@ -175,7 +263,7 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
             Calculadora de Negócios
           </DialogTitle>
           <DialogDescription>
-            Calcule lucros, custos, despesas e receitas com base nos produtos cadastrados.
+            Calcule lucros, custos, despesas e receitas com base nos produtos e plataformas.
           </DialogDescription>
         </DialogHeader>
         
@@ -199,6 +287,44 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
               </SelectContent>
             </Select>
           </div>
+          
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="marketplace" className="text-right">
+              Plataforma:
+            </Label>
+            <Select
+              value={selectedMarketplace}
+              onValueChange={(value) => setSelectedMarketplace(value as MarketplaceType)}
+            >
+              <SelectTrigger id="marketplace" className="col-span-3">
+                <SelectValue placeholder="Escolha uma plataforma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Personalizado</SelectItem>
+                <SelectItem value="lojapropia">Loja Própria</SelectItem>
+                <SelectItem value="shopee">Shopee</SelectItem>
+                <SelectItem value="mercadolivre">Mercado Livre</SelectItem>
+                <SelectItem value="magalu">Magazine Luiza</SelectItem>
+                <SelectItem value="casasbahia">Casas Bahia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {selectedMarketplace && (
+            <div className="bg-muted/30 p-3 rounded-md text-sm">
+              <div className="flex items-center gap-2 mb-2">
+                {marketplaceConfigs[selectedMarketplace].icon}
+                <span className="font-medium">{marketplaceConfigs[selectedMarketplace].name}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                <span>Taxa da plataforma:</span>
+                <span>{marketplaceConfigs[selectedMarketplace].feePercentage}% + R${marketplaceConfigs[selectedMarketplace].fixedFee.toFixed(2)}</span>
+                
+                <span>Custo de envio:</span>
+                <span>R${marketplaceConfigs[selectedMarketplace].shippingFee.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
           
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="product" className="text-right">
@@ -299,14 +425,6 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
           )}
         </div>
         
-        <Button 
-          onClick={handleCalculate}
-          disabled={isCalculating || (!selectedProduct && (customPrice <= 0 || customCost <= 0)) || quantity <= 0}
-          className="mt-2"
-        >
-          {isCalculating ? "Calculando..." : "Calcular"}
-        </Button>
-        
         {result !== null && (
           <Card className="mt-4 border-2 border-lingerie-200 dark:border-lingerie-800">
             <CardContent className="pt-6">
@@ -320,7 +438,30 @@ const BusinessCalculator = ({ isOpen, onClose }: BusinessCalculatorProps) => {
                 </div>
               </div>
               
-              {calculationType === 'profit' && result > 0 && (
+              {marketplaceDetails && (
+                <div className="mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700">
+                  <h4 className="font-medium text-sm mb-2">Detalhes do Cálculo:</h4>
+                  <div className="text-sm grid grid-cols-2 gap-x-4 gap-y-2">
+                    <span className="text-muted-foreground">Taxa da Plataforma:</span>
+                    <span className="text-red-500">- R$ {marketplaceDetails.platformFee.toFixed(2)}</span>
+                    
+                    <span className="text-muted-foreground">Custo de Envio:</span>
+                    <span className="text-red-500">- R$ {marketplaceDetails.shippingCost.toFixed(2)}</span>
+                    
+                    <span className="font-medium">Lucro Líquido:</span>
+                    <span className={marketplaceDetails.netProfit < 0 ? "text-red-500" : "text-green-500"}>
+                      R$ {marketplaceDetails.netProfit.toFixed(2)}
+                    </span>
+                    
+                    <span className="font-medium">Margem de Lucro:</span>
+                    <span className={marketplaceDetails.profitMargin < 0 ? "text-red-500" : "text-green-500"}>
+                      {marketplaceDetails.profitMargin.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              {calculationType === 'profit' && result > 0 && !marketplaceDetails && (
                 <div className="mt-2 text-sm flex items-center gap-1 text-green-600">
                   <Percent className="h-3 w-3" />
                   <span>
