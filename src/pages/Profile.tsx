@@ -5,11 +5,10 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Pencil, UserRound } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useForm } from "react-hook-form";
@@ -58,11 +57,16 @@ const Profile = () => {
         setUser(user);
         
         // Tenta recuperar o perfil do usuário se existir
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
+          
+        if (error) {
+          console.error("Erro ao buscar perfil:", error);
+          return;
+        }
           
         if (profile) {
           form.reset({
@@ -124,7 +128,7 @@ const Profile = () => {
           .update({
             first_name: values.firstName,
             last_name: values.lastName,
-            updated_at: new Date(),
+            updated_at: new Date().toISOString(),
           })
           .eq('id', user.id);
         

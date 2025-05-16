@@ -29,11 +29,16 @@ export const UserAvatar = ({ userId, fallbackInitials = "UR", className = "" }: 
     const fetchProfileData = async (id: string) => {
       try {
         // Buscar o perfil do usuário
-        const { data: profile } = await supabase
+        const { data: profile, error } = await supabase
           .from('profiles')
           .select('first_name, last_name, avatar_url')
           .eq('id', id)
           .single();
+
+        if (error) {
+          console.error("Erro ao buscar perfil:", error);
+          return;
+        }
 
         if (profile) {
           // Definir iniciais com base no nome e sobrenome
