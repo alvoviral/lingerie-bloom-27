@@ -7,6 +7,7 @@ import { TimeframeSelector } from "@/components/reports/TimeframeSelector";
 import { ReportTabs } from "@/components/reports/ReportTabs";
 import { ScheduledReportsCard } from "@/components/reports/ScheduledReportsCard";
 import { AvailableReportsCard } from "@/components/reports/AvailableReportsCard";
+import { Separator } from "@/components/ui/separator";
 
 const Reports = () => {
   useEffect(() => {
@@ -24,7 +25,7 @@ const Reports = () => {
             subtitle="Analise dados e métricas do seu negócio." 
           />
           
-          <div className="mt-8 space-y-8">
+          <div className="mt-8 space-y-12">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-medium">Visão Geral do Negócio</h3>
               <TimeframeSelector />
@@ -34,7 +35,9 @@ const Reports = () => {
             
             <ReportTabs />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mb-10">
+            <Separator className="my-8" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-10">
               <ScheduledReportsCard />
               <AvailableReportsCard />
             </div>
