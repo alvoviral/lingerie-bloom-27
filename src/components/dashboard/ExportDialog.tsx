@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { exportData } from "@/utils/exportUtils";
 import { toast } from "sonner";
-import { Loader2, Download, FilePdf, FileText, FileWord, FileSpreadsheet } from "lucide-react";
+import { Loader2, Download, File } from "lucide-react";
 
 interface ExportDialogProps {
   isOpen: boolean;
@@ -56,13 +56,13 @@ const ExportDialog = ({ isOpen, onClose }: ExportDialogProps) => {
   const getFormatIcon = () => {
     switch (format) {
       case 'pdf':
-        return <FilePdf className="h-4 w-4 mr-2" />;
+        return <File className="h-4 w-4 mr-2" />;
       case 'xlsx':
-        return <FileSpreadsheet className="h-4 w-4 mr-2" />;
+        return <File className="h-4 w-4 mr-2" />;
       case 'txt':
-        return <FileText className="h-4 w-4 mr-2" />;
+        return <File className="h-4 w-4 mr-2" />;
       case 'docx':
-        return <FileWord className="h-4 w-4 mr-2" />;
+        return <File className="h-4 w-4 mr-2" />;
       default:
         return <Download className="h-4 w-4 mr-2" />;
     }

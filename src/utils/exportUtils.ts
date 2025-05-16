@@ -9,55 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 type ExportFormat = 'pdf' | 'xlsx' | 'txt' | 'docx';
 type ExportSection = 'inventory' | 'finances' | 'sales' | 'customers' | 'whatsapp' | 'marketplaces' | 'calendar' | 'reports' | 'settings' | 'all';
 
-// Fetch data functions
-const fetchInventoryData = async () => {
-  const { data, error } = await supabase
-    .from('inventory')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching inventory data:', error);
-    return [];
-  }
-  return data || [];
-};
-
-const fetchFinancesData = async () => {
-  const { data, error } = await supabase
-    .from('finances')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching finances data:', error);
-    return [];
-  }
-  return data || [];
-};
-
-const fetchSalesData = async () => {
-  const { data, error } = await supabase
-    .from('sales')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching sales data:', error);
-    return [];
-  }
-  return data || [];
-};
-
-const fetchCustomersData = async () => {
-  const { data, error } = await supabase
-    .from('customers')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching customers data:', error);
-    return [];
-  }
-  return data || [];
-};
-
 // Helper function to get mock data when no real data exists
 const getMockData = (section: ExportSection) => {
   switch (section) {
@@ -85,7 +36,32 @@ const getMockData = (section: ExportSection) => {
         { id: 2, name: 'Ana Oliveira', email: 'ana@exemplo.com', phone: '(21) 97654-3210', purchases: 2 },
         { id: 3, name: 'Carla Santos', email: 'carla@exemplo.com', phone: '(31) 96543-2109', purchases: 1 },
       ];
-    // Add more sections as needed
+    case 'whatsapp':
+      return [
+        { id: 1, contact: 'Maria Silva', lastMessage: 'Olá, meu pedido chegou?', date: '2023-05-15', status: 'Lida' },
+        { id: 2, contact: 'Ana Oliveira', lastMessage: 'Qual o horário de funcionamento?', date: '2023-05-14', status: 'Não lida' },
+      ];
+    case 'marketplaces':
+      return [
+        { id: 1, platform: 'Shopee', orders: 15, revenue: 1500.00, status: 'Ativo' },
+        { id: 2, platform: 'Mercado Livre', orders: 8, revenue: 950.00, status: 'Ativo' },
+      ];
+    case 'calendar':
+      return [
+        { id: 1, title: 'Reunião com fornecedor', date: '2023-05-20', time: '14:00', notes: 'Discutir novos modelos' },
+        { id: 2, title: 'Sessão de fotos', date: '2023-05-22', time: '10:00', notes: 'Nova coleção verão' },
+      ];
+    case 'reports':
+      return [
+        { id: 1, title: 'Relatório de Vendas Mensais', period: 'Maio 2023', created: '2023-06-01', format: 'PDF' },
+        { id: 2, title: 'Análise de Estoque', period: 'Q2 2023', created: '2023-07-01', format: 'XLSX' },
+      ];
+    case 'settings':
+      return [
+        { id: 1, section: 'Perfil', lastUpdated: '2023-05-10' },
+        { id: 2, section: 'Notificações', lastUpdated: '2023-05-15' },
+        { id: 3, section: 'Integrações', lastUpdated: '2023-05-12' },
+      ];
     default:
       return [];
   }
@@ -94,30 +70,25 @@ const getMockData = (section: ExportSection) => {
 // Fetch data based on section
 const fetchDataForSection = async (section: ExportSection) => {
   try {
-    switch (section) {
-      case 'inventory':
-        return await fetchInventoryData() || getMockData('inventory');
-      case 'finances':
-        return await fetchFinancesData() || getMockData('finances');
-      case 'sales':
-        return await fetchSalesData() || getMockData('sales');
-      case 'customers':
-        return await fetchCustomersData() || getMockData('customers');
-      case 'all':
-        // For 'all', combine data from all sections
-        const inventory = await fetchInventoryData() || getMockData('inventory');
-        const finances = await fetchFinancesData() || getMockData('finances');
-        const sales = await fetchSalesData() || getMockData('sales');
-        const customers = await fetchCustomersData() || getMockData('customers');
-        return {
-          inventory,
-          finances,
-          sales,
-          customers,
-          // Add other sections as needed
-        };
-      default:
-        return getMockData(section);
+    // Since we don't have actual tables in Supabase for these sections yet,
+    // we'll return mock data for all sections for now
+    
+    if (section === 'all') {
+      // For 'all', combine data from all sections
+      return {
+        inventory: getMockData('inventory'),
+        finances: getMockData('finances'),
+        sales: getMockData('sales'),
+        customers: getMockData('customers'),
+        whatsapp: getMockData('whatsapp'),
+        marketplaces: getMockData('marketplaces'),
+        calendar: getMockData('calendar'),
+        reports: getMockData('reports'),
+        settings: getMockData('settings')
+      };
+    } else {
+      // For specific section, return mock data for that section
+      return getMockData(section);
     }
   } catch (error) {
     console.error(`Error fetching data for ${section}:`, error);
