@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Send, MessageSquare, Image } from "lucide-react";
+import { Plus, Send, MessageSquare, Image, Trash2, Eye } from "lucide-react";
 import { 
   Dialog, 
   DialogContent,
@@ -38,15 +39,17 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WhatsAppMessage, Customer, ConnectionState, MessageType } from "./types";
+import DeleteDialog from "@/components/customers/DeleteCustomerDialog";
 
 interface MessagesTabProps {
   messages: WhatsAppMessage[];
   customers: Customer[];
   connectionState: ConnectionState;
   onSendMessage: (message: Omit<WhatsAppMessage, "id" | "receivers" | "status">, recipients: string[]) => void;
+  onDeleteMessage: (messageId: string) => void;
 }
 
-const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: MessagesTabProps) => {
+const MessagesTab = ({ messages, customers, connectionState, onSendMessage, onDeleteMessage }: MessagesTabProps) => {
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
   const [newMessage, setNewMessage] = useState<{
     content: string;
@@ -57,6 +60,10 @@ const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: Me
     type: "text",
     scheduledDate: undefined
   });
+  
+  // Add state for delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<WhatsAppMessage | null>(null);
   
   const handleSelectAllCustomers = (checked: boolean) => {
     if (checked) {
@@ -98,6 +105,21 @@ const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: Me
       scheduledDate: undefined
     });
     setSelectedCustomers([]);
+  };
+  
+  // Add handlers for delete functionality
+  const openDeleteDialog = (message: WhatsAppMessage) => {
+    setMessageToDelete(message);
+    setDeleteDialogOpen(true);
+  };
+  
+  const handleDeleteMessage = () => {
+    if (!messageToDelete) return;
+    
+    // Call the parent component's delete handler
+    onDeleteMessage(messageToDelete.id);
+    setDeleteDialogOpen(false);
+    setMessageToDelete(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -304,9 +326,19 @@ const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: Me
                     ? format(message.scheduledDate, "dd/MM/yyyy") 
                     : "Imediato"}
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" disabled={connectionState.status !== "connected"}>
-                    Ver Detalhes
+                <TableCell className="text-right flex justify-end space-x-2">
+                  <Button variant="ghost" size="icon">
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">Ver Detalhes</span>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => openDeleteDialog(message)}
+                    disabled={connectionState.status !== "connected"}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                    <span className="sr-only">Excluir</span>
                   </Button>
                 </TableCell>
               </TableRow>
@@ -314,6 +346,15 @@ const MessagesTab = ({ messages, customers, connectionState, onSendMessage }: Me
           </TableBody>
         </Table>
       </div>
+      
+      {/* Delete Confirmation Dialog */}
+      <DeleteDialog 
+        isOpen={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDeleteMessage}
+        itemName={messageToDelete?.content.substring(0, 20) + (messageToDelete?.content.length > 20 ? "..." : "") || ""}
+        itemType="mensagem"
+      />
     </>
   );
 };

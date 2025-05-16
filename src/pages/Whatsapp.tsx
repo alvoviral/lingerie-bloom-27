@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef, useCallback } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -241,6 +242,12 @@ const Whatsapp = () => {
     },
     [messages]
   );
+  
+  // Add a handler for deleting messages
+  const handleDeleteMessage = useCallback((messageId: string) => {
+    setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== messageId));
+    toast.success("Mensagem excluída com sucesso!");
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -308,6 +315,7 @@ const Whatsapp = () => {
                   customers={customers}
                   connectionState={connectionState}
                   onSendMessage={handleSendMessage}
+                  onDeleteMessage={handleDeleteMessage} /* Add this prop */
                 />
               </TabsContent>
               

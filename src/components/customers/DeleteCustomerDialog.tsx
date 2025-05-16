@@ -10,26 +10,28 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface DeleteCustomerDialogProps {
+interface DeleteDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  customerName: string;
+  itemName: string;
+  itemType?: string;
 }
 
-const DeleteCustomerDialog = ({
+const DeleteDialog = ({
   isOpen,
   onClose,
   onConfirm,
-  customerName,
-}: DeleteCustomerDialogProps) => {
+  itemName,
+  itemType = "cliente",
+}: DeleteDialogProps) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja excluir o cliente <strong>{customerName}</strong>? Esta ação não pode ser desfeita.
+            Tem certeza que deseja excluir {itemType === "mensagem" ? "a" : "o"} {itemType} <strong>{itemName}</strong>? Esta ação não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -43,4 +45,4 @@ const DeleteCustomerDialog = ({
   );
 };
 
-export default DeleteCustomerDialog;
+export default DeleteDialog;
