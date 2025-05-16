@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -142,7 +143,7 @@ const Profile = () => {
         const { error } = await supabase
           .from('profiles')
           .insert({
-            id: user.id,
+            user_id: user.id,  // Correção: usar user_id em vez de id
             full_name: `${values.firstName} ${values.lastName}`,
             first_name: values.firstName,
             last_name: values.lastName,
