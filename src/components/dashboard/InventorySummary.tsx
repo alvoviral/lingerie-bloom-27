@@ -20,8 +20,8 @@ const InventorySummary = () => {
         <CardTitle className="text-lg font-medium">Resumo do Estoque</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Significantly reduced height for chart container with proper bottom margin */}
-        <div className={`${isMobile ? 'h-[140px]' : 'h-[160px]'} mb-12`}>
+        {/* Fixed height container with proper spacing */}
+        <div className={`${isMobile ? 'h-48' : 'h-52'} w-full mb-6 pt-2`}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
               <Pie
@@ -42,12 +42,12 @@ const InventorySummary = () => {
                 formatter={(value) => [`${value} itens`, undefined]}
                 labelFormatter={(label, payload) => payload[0]?.name || ''}
               />
-              <Legend />
+              <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
         </div>
-        {/* Significantly increased margin-top to create more space between chart and cards */}
-        <div className="mt-16 grid grid-cols-3 gap-2 text-center text-xs">
+        {/* Reduced top margin now that chart is properly contained */}
+        <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Total de Itens</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">

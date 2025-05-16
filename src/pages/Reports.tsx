@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -162,13 +163,13 @@ const Reports = () => {
               </TabsList>
               
               <TabsContent value="vendas" className="mt-4">
-                <Card>
+                <Card className="mb-24">
                   <CardHeader className="pb-0">
                     <CardTitle>Gráfico de Vendas</CardTitle>
                   </CardHeader>
-                  <CardContent className="pb-2">
-                    {/* Further reduced chart height with additional bottom margin */}
-                    <div className={`${isMobile ? 'h-32' : 'h-36'} mt-1 mb-14`}>
+                  <CardContent className="pb-8">
+                    {/* Fixed height for chart with complete containment */}
+                    <div className={`${isMobile ? 'h-48' : 'h-64'} w-full relative`}>
                       <ChartContainer
                         config={{
                           sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -181,14 +182,14 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 20 : 25,
+                            bottom: 30,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="month" tick={{ fontSize: 8 }} />
+                          <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                           <YAxis 
                             tickFormatter={(value) => `R$ ${value.toLocaleString()}`}
-                            tick={{ fontSize: 8 }}
+                            tick={{ fontSize: 10 }}
                             ticks={[0, 1]}
                           />
                           <Tooltip 
@@ -220,7 +221,7 @@ const Reports = () => {
                               return null;
                             }}
                           />
-                          <Legend wrapperStyle={{ paddingTop: 0, marginTop: -5, fontSize: 8 }} />
+                          <Legend wrapperStyle={{ paddingTop: 5, fontSize: 10, bottom: -10 }} />
                           <Line
                             type="monotone"
                             dataKey="value"
@@ -239,13 +240,13 @@ const Reports = () => {
               
               {/* Adjusted other tab content heights similarly */}
               <TabsContent value="categorias" className="mt-4">
-                <Card>
+                <Card className="mb-24">
                   <CardHeader className="pb-0">
                     <CardTitle>Vendas por Categoria</CardTitle>
                   </CardHeader>
-                  <CardContent className="pb-2">
+                  <CardContent className="pb-8">
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-44'}`}>
+                      <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-64'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart 
                             margin={{
@@ -298,13 +299,13 @@ const Reports = () => {
               </TabsContent>
               
               <TabsContent value="marketplaces" className="mt-4">
-                <Card>
+                <Card className="mb-24">
                   <CardHeader className="pb-0">
                     <CardTitle>Vendas por Marketplace</CardTitle>
                   </CardHeader>
-                  <CardContent className="pb-2">
+                  <CardContent className="pb-8">
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-44'}`}>
+                      <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-64'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart
                             margin={{
@@ -357,13 +358,13 @@ const Reports = () => {
               </TabsContent>
               
               <TabsContent value="estoque" className="mt-4">
-                <Card>
+                <Card className="mb-24">
                   <CardHeader className="pb-0">
                     <CardTitle>Estoque vs. Vendas</CardTitle>
                   </CardHeader>
-                  <CardContent className="pb-2">
-                    {/* Further reduced chart height with additional bottom margin */}
-                    <div className={`${isMobile ? 'h-32' : 'h-36'} mt-1 mb-14`}>
+                  <CardContent className="pb-8">
+                    {/* Fixed height for chart with complete containment */}
+                    <div className={`${isMobile ? 'h-48' : 'h-64'} w-full relative`}>
                       <ChartContainer
                         config={{
                           estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
@@ -376,17 +377,17 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 20 : 25,
+                            bottom: 30,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="month" tick={{ fontSize: 8 }} />
+                          <XAxis dataKey="month" tick={{ fontSize: 10 }} />
                           <YAxis 
-                            tick={{ fontSize: 8 }}
+                            tick={{ fontSize: 10 }}
                             ticks={[0, 1]}
                           />
                           <Tooltip />
-                          <Legend wrapperStyle={{ marginTop: -5, paddingBottom: 0, fontSize: 8 }} />
+                          <Legend wrapperStyle={{ paddingTop: 5, fontSize: 10, bottom: -10 }} />
                           <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                           <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
                         </BarChart>
@@ -397,8 +398,7 @@ const Reports = () => {
               </TabsContent>
             </Tabs>
             
-            {/* Significantly increased margin-top to create more separation between charts and cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mb-10">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">

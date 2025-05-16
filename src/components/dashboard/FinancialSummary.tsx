@@ -27,8 +27,8 @@ const FinancialSummary = () => {
         <CardTitle className="text-lg font-medium">Resumo Financeiro</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Significantly reduced height for chart container with proper bottom margin */}
-        <div className={`${isMobile ? 'h-[100px]' : 'h-[120px]'} mt-2 mb-12`}>
+        {/* Fixed height container with proper spacing */}
+        <div className={`${isMobile ? 'h-48' : 'h-52'} w-full mb-6 pt-2`}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
@@ -36,7 +36,7 @@ const FinancialSummary = () => {
                 top: 5,
                 right: 5,
                 left: 0,
-                bottom: 10, // Increased bottom margin
+                bottom: 30,
               }}
             >
               <defs>
@@ -50,17 +50,17 @@ const FinancialSummary = () => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 8 }} /> {/* Decreased font size */}
+              <XAxis dataKey="name" tick={{ fontSize: 10 }} />
               <YAxis 
-                tick={{ fontSize: 8 }} /* Decreased font size */
+                tick={{ fontSize: 10 }}
                 tickFormatter={(value) => `R$${value}`}
-                // Reduce number of ticks to save vertical space
                 ticks={[0, 1]}
               />
               <Tooltip 
                 formatter={(value) => [`R$ ${value}`, undefined]}
                 labelFormatter={(label) => `Mês: ${label}`}
               />
+              <Legend verticalAlign="bottom" height={36} />
               <Area
                 type="monotone"
                 dataKey="receita"
@@ -82,8 +82,8 @@ const FinancialSummary = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        {/* Significantly increased spacing between chart and cards */}
-        <div className="mt-16 grid grid-cols-2 gap-4 text-center">
+        {/* Reduced top margin now that chart is properly contained */}
+        <div className="mt-2 grid grid-cols-2 gap-4 text-center">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Receita Total</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
