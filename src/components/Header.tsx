@@ -10,7 +10,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -20,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
+import UserProfileDropdown from "@/components/dashboard/UserProfileDropdown";
 
 interface HeaderProps {
   title: string;
@@ -32,33 +32,6 @@ interface HeaderProps {
 const Header = ({ title, subtitle, className = "", showSearchOnly = false, children }: HeaderProps) => {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const handleProfileClick = () => {
-    // Navigate to profile page - you can implement this route later
-    toast.info("Funcionalidade de perfil em desenvolvimento");
-  };
-
-  const handleSettingsClick = () => {
-    // Navigate to settings page
-    navigate('/dashboard/configuracoes');
-  };
-
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-      // If you're using Supabase for auth
-      await supabase.auth.signOut();
-      // Redirect to login page or home
-      toast.success("Logout realizado com sucesso");
-      navigate('/');
-    } catch (error) {
-      console.error("Erro ao fazer logout:", error);
-      toast.error("Erro ao fazer logout");
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
 
   return (
     <div className={`flex flex-col sm:flex-row justify-between items-start sm:items-center ${className}`}>
@@ -156,31 +129,8 @@ const Header = ({ title, subtitle, className = "", showSearchOnly = false, child
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* User profile dropdown - z-index 30 */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
-                  <Avatar>
-                    <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="z-30">
-                <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  className="cursor-pointer text-red-500 focus:text-red-500" 
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                >
-                  {isLoggingOut ? "Saindo..." : "Sair"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Substituir pelo componente UserProfileDropdown */}
+            <UserProfileDropdown />
           </>
         )}
       </div>

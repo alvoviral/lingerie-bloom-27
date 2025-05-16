@@ -9,17 +9,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import UserAvatar from "./UserAvatar";
 
 export const UserProfileDropdown = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleProfileClick = () => {
-    toast.info("Funcionalidade de perfil em desenvolvimento");
+    navigate('/dashboard/perfil');
   };
 
   const handleSettingsClick = () => {
@@ -44,10 +44,7 @@ export const UserProfileDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
-          <Avatar>
-            <AvatarImage src="/placeholder.svg" />
-            <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
-          </Avatar>
+          <UserAvatar />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="z-30">
