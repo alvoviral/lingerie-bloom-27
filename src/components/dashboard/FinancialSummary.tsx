@@ -27,8 +27,8 @@ const FinancialSummary = () => {
         <CardTitle className="text-lg font-medium">Resumo Financeiro</CardTitle>
       </CardHeader>
       <CardContent>
-        {/* Further reduced height for chart container with additional bottom margin */}
-        <div className={`${isMobile ? 'h-[110px]' : 'h-[130px]'} mt-2 mb-8`}>
+        {/* Significantly reduced height for chart container with proper bottom margin */}
+        <div className={`${isMobile ? 'h-[100px]' : 'h-[120px]'} mt-2 mb-12`}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
@@ -36,7 +36,7 @@ const FinancialSummary = () => {
                 top: 5,
                 right: 5,
                 left: 0,
-                bottom: 5, // Increased bottom margin
+                bottom: 10, // Increased bottom margin
               }}
             >
               <defs>
@@ -83,7 +83,7 @@ const FinancialSummary = () => {
           </ResponsiveContainer>
         </div>
         {/* Significantly increased spacing between chart and cards */}
-        <div className="mt-10 grid grid-cols-2 gap-4 text-center">
+        <div className="mt-16 grid grid-cols-2 gap-4 text-center">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Receita Total</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">

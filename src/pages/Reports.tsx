@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -169,7 +168,7 @@ const Reports = () => {
                   </CardHeader>
                   <CardContent className="pb-2">
                     {/* Further reduced chart height with additional bottom margin */}
-                    <div className={`${isMobile ? 'h-36' : 'h-40'} mt-1 mb-8`}>
+                    <div className={`${isMobile ? 'h-32' : 'h-36'} mt-1 mb-14`}>
                       <ChartContainer
                         config={{
                           sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -182,7 +181,7 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 5 : 10,
+                            bottom: isMobile ? 20 : 25,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -364,7 +363,7 @@ const Reports = () => {
                   </CardHeader>
                   <CardContent className="pb-2">
                     {/* Further reduced chart height with additional bottom margin */}
-                    <div className={`${isMobile ? 'h-36' : 'h-40'} mt-1 mb-8`}>
+                    <div className={`${isMobile ? 'h-32' : 'h-36'} mt-1 mb-14`}>
                       <ChartContainer
                         config={{
                           estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
@@ -377,7 +376,7 @@ const Reports = () => {
                             top: 5,
                             right: 5,
                             left: 0,
-                            bottom: isMobile ? 5 : 10,
+                            bottom: isMobile ? 20 : 25,
                           }}
                         >
                           <CartesianGrid strokeDasharray="3 3" vertical={false} />
