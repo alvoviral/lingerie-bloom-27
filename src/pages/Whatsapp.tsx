@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef, useCallback } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -310,13 +309,7 @@ const Whatsapp = () => {
               </TabsList>
               
               <TabsContent value="messages" className="mt-0">
-                <MessagesTab 
-                  messages={messages}
-                  customers={customers}
-                  connectionState={connectionState}
-                  onSendMessage={handleSendMessage}
-                  onDeleteMessage={handleDeleteMessage} /* Add this prop */
-                />
+                <MessagesTab />
               </TabsContent>
               
               <TabsContent value="contacts" className="mt-0">

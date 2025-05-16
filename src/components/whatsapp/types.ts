@@ -3,6 +3,7 @@ export type MessageType = "text" | "image" | "audio";
 export type ConnectionStatus = "connected" | "disconnected" | "connecting" | "reconnecting" | "error";
 export type MessageDirection = "incoming" | "outgoing";
 export type ConnectionError = "timeout" | "qr_expired" | "server_error" | "auth_failure" | "network_error" | "unknown";
+export type MessageStatus = "sent" | "scheduled" | "failed";
 
 export interface ConnectionState {
   status: ConnectionStatus;
@@ -19,6 +20,16 @@ export interface WhatsAppMessage {
   receivers: number;
   status: "Agendada" | "Enviada" | "Falha";
   scheduledDate?: Date;
+}
+
+export interface MessageItem {
+  id: string;
+  content: string;
+  type: string;
+  recipients: number;
+  status: MessageStatus;
+  scheduledFor: string;
+  createdAt: Date;
 }
 
 export interface Customer {

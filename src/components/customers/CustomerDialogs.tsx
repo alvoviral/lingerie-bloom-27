@@ -14,6 +14,8 @@ export const CustomerDialogs = () => {
     isDeleteDialogOpen,
     setIsAddDialogOpen,
     setIsEditDialogOpen,
+    setIsDetailDialogOpen,
+    setIsDeleteDialogOpen,
     handleAddCustomer,
     handleEditCustomer,
     handleDeleteCustomer,
