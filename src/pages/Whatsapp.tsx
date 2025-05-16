@@ -62,10 +62,10 @@ import {
   PhoneOff,
   Plus, 
   QrCode,
-  Refresh, 
+  RefreshCw, 
   Send, 
   Users, 
-  Whatsapp as WhatsappIcon 
+  MessageSquareText 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -266,7 +266,7 @@ const Whatsapp = () => {
       
       <div className="flex gap-2 mt-6">
         <Button variant="outline" onClick={handleRefreshQrCode}>
-          <Refresh className="h-4 w-4 mr-2" />
+          <RefreshCw className="h-4 w-4 mr-2" />
           Atualizar QR Code
         </Button>
         <Button onClick={handleScanComplete}>
@@ -281,7 +281,7 @@ const Whatsapp = () => {
     if (connectionStatus === "connected") {
       return (
         <Alert className="mb-6 bg-green-50 border-green-200">
-          <WhatsappIcon className="h-4 w-4 text-green-600" />
+          <MessageSquareText className="h-4 w-4 text-green-600" />
           <AlertTitle className="text-green-600">WhatsApp Conectado</AlertTitle>
           <AlertDescription className="text-green-700">
             Seu WhatsApp está conectado e pronto para enviar mensagens.
