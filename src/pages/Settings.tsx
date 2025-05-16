@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -12,7 +11,8 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Edit, Trash2 } from "lucide-react";
+import { Calculator, Edit, Trash2 } from "lucide-react";
+import BusinessCalculator from "@/components/settings/BusinessCalculator";
 
 interface User {
   id: string;
@@ -62,6 +62,9 @@ const Settings = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [editedUser, setEditedUser] = useState<Partial<User>>({});
+  
+  // Calculadora de Negócios
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   const handleStoreSettingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -378,6 +381,21 @@ const Settings = () => {
                 </Card>
               </TabsContent>
             </Tabs>
+            
+            {/* Botão Calculadora de Negócios */}
+            <div className="mt-8">
+              <Button 
+                onClick={() => setIsCalculatorOpen(true)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                Calculadora de Negócios
+              </Button>
+              <p className="text-sm text-muted-foreground mt-1">
+                Calcule lucros, custos e projeções com base nos dados da sua loja.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -449,6 +467,12 @@ const Settings = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      {/* Calculadora de Negócios */}
+      <BusinessCalculator 
+        isOpen={isCalculatorOpen} 
+        onClose={() => setIsCalculatorOpen(false)} 
+      />
     </div>
   );
 };

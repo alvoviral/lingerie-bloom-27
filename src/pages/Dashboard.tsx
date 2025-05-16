@@ -1,17 +1,18 @@
-
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/dashboard/StatCard";
-import { DollarSign, ShoppingBag, Users, Package, Download } from "lucide-react";
+import { Calculator, DollarSign, Download, ShoppingBag, Users, Package } from "lucide-react";
 import FinancialSummary from "@/components/dashboard/FinancialSummary";
 import InventorySummary from "@/components/dashboard/InventorySummary";
 import RecentSales from "@/components/dashboard/RecentSales";
 import { Button } from "@/components/ui/button";
 import ExportDialog from "@/components/dashboard/ExportDialog";
+import BusinessCalculator from "@/components/settings/BusinessCalculator";
 
 const Dashboard = () => {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+  const [isCalculatorOpen, setIsCalculatorOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard | BelleCharm";
@@ -29,14 +30,24 @@ const Dashboard = () => {
               subtitle="Bem-vinda de volta! Aqui está o resumo do seu negócio hoje." 
             />
             
-            <Button
-              onClick={() => setIsExportDialogOpen(true)}
-              variant="outline"
-              className="hidden sm:flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Exportar Dados
-            </Button>
+            <div className="hidden sm:flex items-center gap-2">
+              <Button
+                onClick={() => setIsCalculatorOpen(true)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                Calculadora
+              </Button>
+              <Button
+                onClick={() => setIsExportDialogOpen(true)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Exportar Dados
+              </Button>
+            </div>
           </div>
           
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -83,8 +94,16 @@ const Dashboard = () => {
             <RecentSales />
           </div>
 
-          {/* Mobile export button */}
-          <div className="mt-6 sm:hidden">
+          {/* Mobile buttons */}
+          <div className="mt-6 sm:hidden grid grid-cols-2 gap-4">
+            <Button
+              onClick={() => setIsCalculatorOpen(true)}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-2"
+            >
+              <Calculator className="h-4 w-4" />
+              Calculadora
+            </Button>
             <Button
               onClick={() => setIsExportDialogOpen(true)}
               variant="outline"
@@ -95,10 +114,15 @@ const Dashboard = () => {
             </Button>
           </div>
 
-          {/* Export Dialog */}
+          {/* Dialogs */}
           <ExportDialog 
             isOpen={isExportDialogOpen} 
             onClose={() => setIsExportDialogOpen(false)}
+          />
+          
+          <BusinessCalculator 
+            isOpen={isCalculatorOpen}
+            onClose={() => setIsCalculatorOpen(false)}
           />
         </div>
       </div>
