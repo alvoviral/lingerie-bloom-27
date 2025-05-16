@@ -13,6 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // Form schema using zod for validation
 const signUpSchema = z.object({
+  firstName: z.string().min(2, { message: "Nome deve ter pelo menos 2 caracteres" }).optional(),
+  lastName: z.string().min(2, { message: "Sobrenome deve ter pelo menos 2 caracteres" }).optional(),
   email: z.string().email({ message: "Email inválido" }),
   password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres" }),
 });
@@ -33,6 +35,8 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
   const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
@@ -52,8 +56,9 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
         password: values.password,
         options: {
           data: {
-            first_name: "",
-            last_name: ""
+            first_name: values.firstName || "",
+            last_name: values.lastName || "",
+            full_name: `${values.firstName || ""} ${values.lastName || ""}`.trim()
           },
           emailRedirectTo: window.location.origin + '/dashboard'
         }
@@ -87,6 +92,52 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSignUp)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem className="space-y-1">
+                <FormLabel className="text-sm font-medium text-lingerie-700 font-montserrat ml-1">Nome</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Seu nome"
+                      className="pl-4 pr-4 py-3 border-lingerie-200 focus:border-lingerie-400 bg-white/80 rounded-xl"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage className="text-xs text-red-500 ml-1" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem className="space-y-1">
+                <FormLabel className="text-sm font-medium text-lingerie-700 font-montserrat ml-1">Sobrenome</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Seu sobrenome"
+                      className="pl-4 pr-4 py-3 border-lingerie-200 focus:border-lingerie-400 bg-white/80 rounded-xl"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage className="text-xs text-red-500 ml-1" />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <FormField
           control={form.control}
           name="email"
@@ -120,7 +171,7 @@ const SignUpForm = ({ isLoading, setIsLoading, setMode }: SignUpFormProps) => {
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Sua senha secreta"
-                    className="pl-4 pr-10 py-3 border-lingerie-200 focus:border-lingerie-400 bg-white/80 rounded-xl"
+                    className="pl-4 pr-4 py-10 py-3 border-lingerie-200 focus:border-lingerie-400 bg-white/80 rounded-xl"
                     disabled={isLoading}
                     {...field}
                   />

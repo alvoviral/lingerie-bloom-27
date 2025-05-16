@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 // Form schema using zod for validation
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
-  password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres" }),
+  password: z.string().min(1, { message: "Por favor, informe sua senha" }),
 });
 
 type LoginValues = z.infer<typeof loginSchema>;
@@ -41,6 +41,8 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
     try {
       setIsLoading(true);
       
+      console.log("Tentando login com:", values.email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
@@ -50,6 +52,7 @@ const LoginForm = ({ isLoading, setIsLoading }: LoginFormProps) => {
         throw error;
       }
       
+      console.log("Login bem-sucedido:", data);
       toast.success("Login realizado com sucesso!");
       navigate('/dashboard');
     } catch (error: any) {

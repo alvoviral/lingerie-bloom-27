@@ -30,10 +30,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(false);
         
         if (event === 'SIGNED_OUT') {
+          console.log("Usuário deslogado, redirecionando para página inicial");
           navigate('/', { replace: true });
         } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           // Only navigate if not already on a protected route
+          console.log("Usuário logado, verificando rota atual:", location.pathname);
           if (location.pathname === '/' || location.pathname === '/login') {
+            console.log("Redirecionando para dashboard");
             navigate('/dashboard', { replace: true });
           }
         }
@@ -44,16 +47,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const getInitialSession = async () => {
       try {
         setIsLoading(true);
+        console.log("Verificando sessão existente...");
         const { data: { session: initialSession } } = await supabase.auth.getSession();
+        console.log("Sessão inicial:", initialSession?.user?.email || "nenhuma");
         setSession(initialSession);
         setUser(initialSession?.user ?? null);
         
         // Initial redirect if session exists
         if (initialSession && (location.pathname === '/' || location.pathname === '/login')) {
+          console.log("Sessão ativa encontrada, redirecionando para dashboard");
           navigate('/dashboard', { replace: true });
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
+        console.error('Erro ao obter sessão inicial:', error);
       } finally {
         setIsLoading(false);
       }
@@ -67,6 +73,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate, location.pathname]);
   
   const signOut = async () => {
+    console.log("Realizando logout");
     await supabase.auth.signOut();
   };
 
