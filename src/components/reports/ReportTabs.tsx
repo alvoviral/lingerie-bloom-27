@@ -7,27 +7,27 @@ import { InventoryChart } from "./InventoryChart";
 
 export const ReportTabs = () => {
   return (
-    <Tabs defaultValue="vendas" className="mt-16">
-      <TabsList className="flex overflow-x-auto pb-1 mb-2 md:pb-0 md:mb-0">
+    <Tabs defaultValue="vendas" className="mt-28">
+      <TabsList className="flex overflow-x-auto pb-1 mb-6 md:pb-0 md:mb-4">
         <TabsTrigger value="vendas">Vendas</TabsTrigger>
         <TabsTrigger value="categorias">Categorias</TabsTrigger>
         <TabsTrigger value="marketplaces">Marketplaces</TabsTrigger>
         <TabsTrigger value="estoque">Estoque</TabsTrigger>
       </TabsList>
       
-      <TabsContent value="vendas" className="mt-8">
+      <TabsContent value="vendas" className="mt-16">
         <SalesChart />
       </TabsContent>
       
-      <TabsContent value="categorias" className="mt-8">
+      <TabsContent value="categorias" className="mt-16">
         <CategoryChart />
       </TabsContent>
       
-      <TabsContent value="marketplaces" className="mt-8">
+      <TabsContent value="marketplaces" className="mt-16">
         <MarketplaceChart />
       </TabsContent>
       
-      <TabsContent value="estoque" className="mt-8">
+      <TabsContent value="estoque" className="mt-16">
         <InventoryChart />
       </TabsContent>
     </Tabs>
