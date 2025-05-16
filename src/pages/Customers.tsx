@@ -103,10 +103,15 @@ const Customers = () => {
   });
 
   function onSubmit(data: CustomerFormValues) {
-    // Adiciona um novo cliente com os dados do formulário
+    // Corrigido: Garantir que todos os campos obrigatórios sejam incluídos
     const newCustomer: Customer = {
       id: Date.now().toString(),
-      ...data,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      segment: data.segment,
+      notes: data.notes,
       totalSpent: 0,
       lastPurchase: "Nenhuma compra"
     };
