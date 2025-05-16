@@ -2,14 +2,15 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ChartPie } from "lucide-react";
 
 // Sample category data
 const categoryData = [
-  { name: 'Lingerie', value: 0 },
-  { name: 'Roupas íntimas', value: 0 },
-  { name: 'Sleepwear', value: 0 },
-  { name: 'Acessórios', value: 0 },
-  { name: 'Outros', value: 0 },
+  { name: 'Lingerie', value: 35 },
+  { name: 'Roupas íntimas', value: 25 },
+  { name: 'Sleepwear', value: 20 },
+  { name: 'Acessórios', value: 15 },
+  { name: 'Outros', value: 5 },
 ];
 
 const COLORS = ['#ec4899', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b'];
@@ -20,18 +21,21 @@ export const CategoryChart = () => {
   return (
     <Card className="mb-4">
       <CardHeader className="pb-0 pt-4">
-        <CardTitle>Vendas por Categoria</CardTitle>
+        <CardTitle className="flex items-center">
+          <ChartPie className="mr-2 h-5 w-5" />
+          Vendas por Categoria
+        </CardTitle>
       </CardHeader>
       <CardContent className="pb-3 pt-2">
-        <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-          <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-64'}`}>
+        <div className={`${isMobile ? 'block' : 'flex'} items-center justify-between gap-4`}>
+          <div className={`${isMobile ? 'w-full h-64' : 'w-1/2 h-80'} flex items-center justify-center`}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart 
                 margin={{
-                  top: 10,
-                  right: 10,
-                  left: 10,
-                  bottom: 10,
+                  top: 0,
+                  right: 0,
+                  left: 0,
+                  bottom: 0,
                 }}
               >
                 <Pie
@@ -39,34 +43,57 @@ export const CategoryChart = () => {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  outerRadius={isMobile ? 60 : 80}
+                  outerRadius={isMobile ? 80 : 120}
+                  innerRadius={isMobile ? 40 : 60}
                   fill="#8884d8"
                   dataKey="value"
-                  label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  paddingAngle={2}
+                  label={({name, percent}) => `${(percent * 100).toFixed(0)}%`}
                 >
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={COLORS[index % COLORS.length]} 
+                      stroke="white"
+                      strokeWidth={2}
+                    />
                   ))}
                 </Pie>
                 <Tooltip 
                   formatter={(value) => [`${value}%`, 'Porcentagem']}
+                  contentStyle={{
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                  }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className={`${isMobile ? 'w-full mt-2' : 'w-1/2 pl-4'}`}>
+          <div className={`${isMobile ? 'w-full mt-2' : 'w-1/2'}`}>
             <h4 className="text-sm font-medium mb-3">Distribuição por categorias</h4>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {categoryData.map((item, index) => (
-                <div key={`legend-${index}`} className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <div 
-                      className="w-3 h-3 rounded-full mr-2" 
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    ></div>
-                    <span className="text-sm">{item.name}</span>
+                <div key={`legend-${index}`} className="flex items-center gap-2">
+                  <div 
+                    className="w-4 h-4 rounded-full" 
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  ></div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium">{item.name}</span>
+                      <span className="text-sm font-medium">{item.value}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
+                      <div 
+                        className="h-2 rounded-full" 
+                        style={{ 
+                          width: `${item.value}%`,
+                          backgroundColor: COLORS[index % COLORS.length]
+                        }}
+                      ></div>
+                    </div>
                   </div>
-                  <span className="text-sm font-medium">{item.value}%</span>
                 </div>
               ))}
             </div>
