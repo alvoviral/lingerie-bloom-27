@@ -8,16 +8,24 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Package, Edit, Trash2 } from "lucide-react";
 import { Product } from "@/types/inventory";
 import { getStatusColor } from "@/utils/inventoryUtils";
 
 interface ProductTableProps {
   products: Product[];
   searchQuery: string;
+  onEditProduct: (product: Product) => void;
+  onDeleteProduct: (productId: string) => void;
 }
 
-const ProductTable = ({ products, searchQuery }: ProductTableProps) => {
+const ProductTable = ({ 
+  products, 
+  searchQuery, 
+  onEditProduct, 
+  onDeleteProduct 
+}: ProductTableProps) => {
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     product.sku.toLowerCase().includes(searchQuery.toLowerCase())
@@ -36,6 +44,7 @@ const ProductTable = ({ products, searchQuery }: ProductTableProps) => {
             <TableHead className="text-right">Preço (R$)</TableHead>
             <TableHead className="text-right">Estoque</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -56,11 +65,19 @@ const ProductTable = ({ products, searchQuery }: ProductTableProps) => {
                     {product.status}
                   </Badge>
                 </TableCell>
+                <TableCell className="text-right space-x-1">
+                  <Button onClick={() => onEditProduct(product)} size="sm" variant="ghost">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button onClick={() => onDeleteProduct(product.id)} size="sm" variant="ghost">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-10">
+              <TableCell colSpan={9} className="text-center py-10">
                 <div className="flex flex-col items-center justify-center text-muted-foreground">
                   <Package className="h-10 w-10 mb-2" />
                   <p>Nenhum produto encontrado</p>
