@@ -1,8 +1,12 @@
 
 import { cn } from "@/lib/utils";
-import { ShoppingCart } from "lucide-react";
+import { Pencil, ShoppingCart, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const salesData: any[] = []; // Empty array since there are no real sales yet
 
@@ -37,6 +41,29 @@ const getMarketplaceColor = (marketplace: string) => {
 };
 
 const RecentSales = () => {
+  const [sales, setSales] = useState(salesData);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<string | null>(null);
+  
+  const handleDelete = (id: string) => {
+    setSaleToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (saleToDelete) {
+      setSales(sales.filter(sale => sale.id !== saleToDelete));
+      setDeleteDialogOpen(false);
+      setSaleToDelete(null);
+      toast.success("Venda removida com sucesso");
+    }
+  };
+
+  const handleEdit = (id: string) => {
+    // Navigate to full sales page for editing
+    window.location.href = `/dashboard/vendas?edit=${id}`;
+  };
+  
   return (
     <Card className="hover-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -44,9 +71,9 @@ const RecentSales = () => {
         <ShoppingCart className="h-4 w-4 text-muted-foreground" />
       </CardHeader>
       <CardContent>
-        {salesData.length > 0 ? (
+        {sales.length > 0 ? (
           <div className="space-y-4">
-            {salesData.map((sale) => (
+            {sales.map((sale) => (
               <div key={sale.id} className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0">
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{sale.customer}</p>
@@ -60,9 +87,21 @@ const RecentSales = () => {
                     </Badge>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{sale.amount}</p>
-                  <p className="text-xs text-muted-foreground">{sale.date}</p>
+                <div className="flex items-center space-x-2">
+                  <div className="text-right mr-2">
+                    <p className="text-sm font-medium">{sale.amount}</p>
+                    <p className="text-xs text-muted-foreground">{sale.date}</p>
+                  </div>
+                  <div className="flex flex-col space-y-1">
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(sale.id)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                      <span className="sr-only">Editar</span>
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(sale.id)}>
+                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                      <span className="sr-only">Excluir</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -74,6 +113,23 @@ const RecentSales = () => {
           </div>
         )}
       </CardContent>
+      
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente a venda do sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 hover:bg-red-600">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

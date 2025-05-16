@@ -28,8 +28,37 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Calendar, Search, ShoppingCart } from "lucide-react";
+import { Calendar, Pencil, Search, ShoppingCart, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 interface Sale {
   id: string;
@@ -45,6 +74,22 @@ interface Sale {
   }[];
   marketplace: string;
 }
+
+const formSchema = z.object({
+  orderNumber: z.string().min(1, "Número do pedido é obrigatório"),
+  customer: z.string().min(1, "Nome do cliente é obrigatório"),
+  date: z.string().min(1, "Data é obrigatória"),
+  total: z.coerce.number().min(0, "Total deve ser maior ou igual a zero"),
+  status: z.enum(["Pendente", "Pago", "Enviado", "Entregue", "Cancelado"]),
+  marketplace: z.string().min(1, "Marketplace é obrigatório"),
+  items: z.array(
+    z.object({
+      product: z.string().min(1, "Nome do produto é obrigatório"),
+      quantity: z.coerce.number().min(1, "Quantidade deve ser pelo menos 1"),
+      price: z.coerce.number().min(0, "Preço deve ser maior ou igual a zero"),
+    })
+  ),
+});
 
 const Sales = () => {
   useEffect(() => {
@@ -118,6 +163,30 @@ const Sales = () => {
     }
   ]);
 
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [saleToDelete, setSaleToDelete] = useState<string | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [saleToEdit, setSaleToEdit] = useState<Sale | null>(null);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      orderNumber: "",
+      customer: "",
+      date: "",
+      total: 0,
+      status: "Pendente" as const,
+      marketplace: "",
+      items: [
+        {
+          product: "",
+          quantity: 1,
+          price: 0,
+        },
+      ],
+    },
+  });
+
   const filteredSales = sales.filter(sale => {
     const matchesSearch = 
       sale.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -160,6 +229,239 @@ const Sales = () => {
     ));
     toast.success(`Status do pedido ${id} atualizado para ${newStatus}`);
   };
+
+  const handleDelete = (id: string) => {
+    setSaleToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (saleToDelete) {
+      const orderNumber = sales.find(sale => sale.id === saleToDelete)?.orderNumber;
+      setSales(sales.filter(sale => sale.id !== saleToDelete));
+      setDeleteDialogOpen(false);
+      setSaleToDelete(null);
+      toast.success(`Pedido ${orderNumber} excluído com sucesso`);
+    }
+  };
+
+  const openEditDialog = (sale: Sale) => {
+    setSaleToEdit(sale);
+    form.reset({
+      orderNumber: sale.orderNumber,
+      customer: sale.customer,
+      date: sale.date,
+      total: sale.total,
+      status: sale.status,
+      marketplace: sale.marketplace,
+      items: sale.items,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = (values: z.infer<typeof formSchema>) => {
+    if (saleToEdit) {
+      setSales(
+        sales.map((sale) =>
+          sale.id === saleToEdit.id
+            ? {
+                ...sale,
+                ...values,
+                total: values.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+              }
+            : sale
+        )
+      );
+      setEditDialogOpen(false);
+      setSaleToEdit(null);
+      toast.success(`Pedido ${values.orderNumber} atualizado com sucesso`);
+    }
+  };
+
+  const addItemField = () => {
+    const currentItems = form.getValues("items");
+    form.setValue("items", [
+      ...currentItems,
+      { product: "", quantity: 1, price: 0 },
+    ]);
+  };
+
+  const removeItemField = (index: number) => {
+    const currentItems = form.getValues("items");
+    if (currentItems.length > 1) {
+      form.setValue(
+        "items",
+        currentItems.filter((_, i) => i !== index)
+      );
+    }
+  };
+
+  const renderItemFields = () => {
+    const { fields } = form.getValues();
+    return form.watch("items").map((_, index) => (
+      <div key={index} className="space-y-4 p-4 border rounded-md">
+        <div className="flex justify-between items-center">
+          <h4 className="font-medium">Item {index + 1}</h4>
+          {form.watch("items").length > 1 && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => removeItemField(index)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+        <FormField
+          control={form.control}
+          name={`items.${index}.product`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Produto</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name={`items.${index}.quantity`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantidade</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min="1"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(parseInt(e.target.value) || 1);
+                      calculateTotal();
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name={`items.${index}.price`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Preço Unit.</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(parseFloat(e.target.value) || 0);
+                      calculateTotal();
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+    ));
+  };
+
+  const calculateTotal = () => {
+    const items = form.getValues("items");
+    const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    form.setValue("total", total);
+  };
+
+  const renderSalesTable = (filteredData: Sale[]) => (
+    <div className="rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Pedido</TableHead>
+            <TableHead>Cliente</TableHead>
+            <TableHead>Data</TableHead>
+            <TableHead>Total</TableHead>
+            <TableHead>Marketplace</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredData.length > 0 ? (
+            filteredData.map((sale) => (
+              <TableRow key={sale.id}>
+                <TableCell className="font-medium">{sale.orderNumber}</TableCell>
+                <TableCell>{sale.customer}</TableCell>
+                <TableCell>{sale.date}</TableCell>
+                <TableCell>R$ {sale.total.toFixed(2)}</TableCell>
+                <TableCell>{sale.marketplace}</TableCell>
+                <TableCell>
+                  <Badge className={getStatusColor(sale.status)} variant="outline">
+                    {sale.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Select 
+                      defaultValue={sale.status} 
+                      onValueChange={(value) => updateOrderStatus(sale.id, value as any)}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pendente">Pendente</SelectItem>
+                        <SelectItem value="Pago">Pago</SelectItem>
+                        <SelectItem value="Enviado">Enviado</SelectItem>
+                        <SelectItem value="Entregue">Entregue</SelectItem>
+                        <SelectItem value="Cancelado">Cancelado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => openEditDialog(sale)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">Editar</span>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="icon"
+                      onClick={() => handleDelete(sale.id)}
+                      className="text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Excluir</span>
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-10">
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <ShoppingCart className="h-10 w-10 mb-2" />
+                  <p>Nenhum pedido encontrado</p>
+                  {(searchQuery || filterStatus !== "all") && <p className="text-sm">Tente outros filtros</p>}
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -251,199 +553,189 @@ const Sales = () => {
               </div>
               
               <TabsContent value="all" className="mt-0">
-                <div className="rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Pedido</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Marketplace</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredSales.length > 0 ? (
-                        filteredSales.map((sale) => (
-                          <TableRow key={sale.id}>
-                            <TableCell className="font-medium">{sale.orderNumber}</TableCell>
-                            <TableCell>{sale.customer}</TableCell>
-                            <TableCell>{sale.date}</TableCell>
-                            <TableCell>R$ {sale.total.toFixed(2)}</TableCell>
-                            <TableCell>{sale.marketplace}</TableCell>
-                            <TableCell>
-                              <Badge className={getStatusColor(sale.status)} variant="outline">
-                                {sale.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Select 
-                                defaultValue={sale.status} 
-                                onValueChange={(value) => updateOrderStatus(sale.id, value as any)}
-                              >
-                                <SelectTrigger className="w-[120px]">
-                                  <SelectValue placeholder="Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Pendente">Pendente</SelectItem>
-                                  <SelectItem value="Pago">Pago</SelectItem>
-                                  <SelectItem value="Enviado">Enviado</SelectItem>
-                                  <SelectItem value="Entregue">Entregue</SelectItem>
-                                  <SelectItem value="Cancelado">Cancelado</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-10">
-                            <div className="flex flex-col items-center justify-center text-muted-foreground">
-                              <ShoppingCart className="h-10 w-10 mb-2" />
-                              <p>Nenhum pedido encontrado</p>
-                              {(searchQuery || filterStatus !== "all") && <p className="text-sm">Tente outros filtros</p>}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                {renderSalesTable(filteredSales)}
               </TabsContent>
               
               <TabsContent value="pending" className="mt-0">
-                <div className="rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Pedido</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Marketplace</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredSales.filter(s => s.status === "Pendente").length > 0 ? (
-                        filteredSales
-                          .filter(s => s.status === "Pendente")
-                          .map((sale) => (
-                            <TableRow key={sale.id}>
-                              <TableCell className="font-medium">{sale.orderNumber}</TableCell>
-                              <TableCell>{sale.customer}</TableCell>
-                              <TableCell>{sale.date}</TableCell>
-                              <TableCell>R$ {sale.total.toFixed(2)}</TableCell>
-                              <TableCell>{sale.marketplace}</TableCell>
-                              <TableCell>
-                                <Badge className={getStatusColor(sale.status)} variant="outline">
-                                  {sale.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <Select 
-                                  defaultValue={sale.status} 
-                                  onValueChange={(value) => updateOrderStatus(sale.id, value as any)}
-                                >
-                                  <SelectTrigger className="w-[120px]">
-                                    <SelectValue placeholder="Status" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Pendente">Pendente</SelectItem>
-                                    <SelectItem value="Pago">Pago</SelectItem>
-                                    <SelectItem value="Enviado">Enviado</SelectItem>
-                                    <SelectItem value="Entregue">Entregue</SelectItem>
-                                    <SelectItem value="Cancelado">Cancelado</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-10">
-                            <div className="flex flex-col items-center justify-center text-muted-foreground">
-                              <ShoppingCart className="h-10 w-10 mb-2" />
-                              <p>Nenhum pedido pendente encontrado</p>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                {renderSalesTable(filteredSales.filter(s => s.status === "Pendente"))}
               </TabsContent>
               
               <TabsContent value="shipped" className="mt-0">
-                <div className="rounded-lg border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Pedido</TableHead>
-                        <TableHead>Cliente</TableHead>
-                        <TableHead>Data</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Marketplace</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredSales.filter(s => s.status === "Enviado").length > 0 ? (
-                        filteredSales
-                          .filter(s => s.status === "Enviado")
-                          .map((sale) => (
-                            <TableRow key={sale.id}>
-                              <TableCell className="font-medium">{sale.orderNumber}</TableCell>
-                              <TableCell>{sale.customer}</TableCell>
-                              <TableCell>{sale.date}</TableCell>
-                              <TableCell>R$ {sale.total.toFixed(2)}</TableCell>
-                              <TableCell>{sale.marketplace}</TableCell>
-                              <TableCell>
-                                <Badge className={getStatusColor(sale.status)} variant="outline">
-                                  {sale.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <Select 
-                                  defaultValue={sale.status} 
-                                  onValueChange={(value) => updateOrderStatus(sale.id, value as any)}
-                                >
-                                  <SelectTrigger className="w-[120px]">
-                                    <SelectValue placeholder="Status" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="Pendente">Pendente</SelectItem>
-                                    <SelectItem value="Pago">Pago</SelectItem>
-                                    <SelectItem value="Enviado">Enviado</SelectItem>
-                                    <SelectItem value="Entregue">Entregue</SelectItem>
-                                    <SelectItem value="Cancelado">Cancelado</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={7} className="text-center py-10">
-                            <div className="flex flex-col items-center justify-center text-muted-foreground">
-                              <ShoppingCart className="h-10 w-10 mb-2" />
-                              <p>Nenhum pedido enviado encontrado</p>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                {renderSalesTable(filteredSales.filter(s => s.status === "Enviado"))}
               </TabsContent>
             </Tabs>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Isso excluirá permanentemente o pedido do sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-500 hover:bg-red-600">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Sale Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Pedido</DialogTitle>
+            <DialogDescription>
+              Faça as alterações necessárias ao pedido abaixo.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="orderNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número do Pedido</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="customer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cliente</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="marketplace"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Marketplace</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o marketplace" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Site Próprio">Site Próprio</SelectItem>
+                          <SelectItem value="Shopee">Shopee</SelectItem>
+                          <SelectItem value="Mercado Livre">Mercado Livre</SelectItem>
+                          <SelectItem value="Magazine Luiza">Magazine Luiza</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Pendente">Pendente</SelectItem>
+                          <SelectItem value="Pago">Pago</SelectItem>
+                          <SelectItem value="Enviado">Enviado</SelectItem>
+                          <SelectItem value="Entregue">Entregue</SelectItem>
+                          <SelectItem value="Cancelado">Cancelado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="total"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Total (R$)</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="number" 
+                          min="0" 
+                          step="0.01" 
+                          readOnly 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">Itens do Pedido</h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addItemField}
+                  >
+                    Adicionar Item
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {renderItemFields()}
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" type="button" onClick={() => setEditDialogOpen(false)}>Cancelar</Button>
+                <Button type="submit">Salvar Alterações</Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
