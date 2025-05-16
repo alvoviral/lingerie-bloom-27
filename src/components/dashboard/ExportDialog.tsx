@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ExportOptionsForm from "@/components/dashboard/ExportOptionsForm";
 import { useState } from "react";
-import { exportData } from "@/utils/export";
+import { exportData, ExportFormat } from "@/utils/export";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 
@@ -19,7 +19,7 @@ interface ExportDialogProps {
 }
 
 const ExportDialog = ({ isOpen, onClose }: ExportDialogProps) => {
-  const [exportFormat, setExportFormat] = useState<string>("excel");
+  const [exportFormat, setExportFormat] = useState<ExportFormat>("xlsx");
   const [isExporting, setIsExporting] = useState(false);
   
   const handleExport = async () => {

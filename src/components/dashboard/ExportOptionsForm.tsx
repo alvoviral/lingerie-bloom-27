@@ -2,10 +2,11 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { FileText, FileSpreadsheet, FileType2, File } from "lucide-react";
+import { ExportFormat } from "@/utils/export";
 
 interface ExportOptionsFormProps {
-  exportFormat: string;
-  setExportFormat: (format: string) => void;
+  exportFormat: ExportFormat;
+  setExportFormat: (format: ExportFormat) => void;
 }
 
 const ExportOptionsForm = ({ 
@@ -24,7 +25,7 @@ const ExportOptionsForm = ({
           className="grid grid-cols-1 sm:grid-cols-2 gap-4"
         >
           <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-accent cursor-pointer">
-            <RadioGroupItem value="excel" id="excel" />
+            <RadioGroupItem value="xlsx" id="excel" />
             <Label htmlFor="excel" className="flex items-center cursor-pointer">
               <FileSpreadsheet className="h-5 w-5 mr-2 text-green-600" />
               Excel (.xlsx)
