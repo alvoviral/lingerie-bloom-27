@@ -63,8 +63,9 @@ const Profile = () => {
           .eq('id', user.id)
           .single();
           
-        if (error) {
+        if (error && error.code !== 'PGRST116') { // PGRST116 é "no rows found", não é um erro real nesse caso
           console.error("Erro ao buscar perfil:", error);
+          toast.error("Erro ao buscar dados do perfil");
           return;
         }
           
@@ -115,11 +116,15 @@ const Profile = () => {
     
     try {
       // Verifica se o perfil já existe
-      const { data: existingProfile } = await supabase
+      const { data: existingProfile, error: checkError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle(); // Usando maybeSingle em vez de single para evitar erros
+      
+      if (checkError) {
+        throw checkError;
+      }
       
       if (existingProfile) {
         // Atualiza o perfil existente
@@ -167,6 +172,17 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
+      // Verifica se o bucket existe e cria se não existir
+      const { data: buckets } = await supabase.storage.listBuckets();
+      const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
+      
+      if (!avatarBucketExists) {
+        // O bucket não existe, não podemos prosseguir
+        toast.error("Sistema não configurado corretamente para uploads");
+        console.error("Bucket de avatares não existe");
+        return;
+      }
+      
       // Upload do arquivo para o bucket de avatares
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -239,7 +255,7 @@ const Profile = () => {
                         <AvatarImage src={avatarUrl} alt="Foto de perfil" />
                       ) : null}
                       <AvatarFallback className="bg-lingerie-200 text-lingerie-700 text-2xl">
-                        {avatarUrl ? '' : userInitials()}
+                        {userInitials()}
                       </AvatarFallback>
                     </Avatar>
                     <label 
