@@ -162,13 +162,15 @@ const Reports = () => {
                 <TabsTrigger value="estoque">Estoque</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="vendas" className="mt-6 mb-16">
+              {/* Modified the TabsContent components to have proper margins and chart heights */}
+              <TabsContent value="vendas" className="mt-6 mb-8">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle>Gráfico de Vendas</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className={`${isMobile ? 'h-60' : 'h-72'} mt-2`}>
+                    {/* Reduced chart height */}
+                    <div className={`${isMobile ? 'h-56' : 'h-64'}`}>
                       <ChartContainer
                         config={{
                           sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
@@ -210,7 +212,7 @@ const Reports = () => {
                               return null;
                             }}
                           />
-                          <Legend wrapperStyle={{ paddingTop: 10, marginBottom: -10 }} />
+                          <Legend wrapperStyle={{ marginBottom: -5, paddingTop: 5 }} />
                           <Line
                             type="monotone"
                             dataKey="value"
@@ -227,14 +229,14 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="categorias" className="mt-6 mb-16">
+              <TabsContent value="categorias" className="mt-6 mb-8">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle>Vendas por Categoria</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-60' : 'w-1/2 h-72'}`}>
+                      <div className={`${isMobile ? 'w-full h-56' : 'w-1/2 h-64'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
@@ -279,14 +281,14 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="marketplaces" className="mt-6 mb-16">
+              <TabsContent value="marketplaces" className="mt-6 mb-8">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle>Vendas por Marketplace</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-                      <div className={`${isMobile ? 'w-full h-60' : 'w-1/2 h-72'}`}>
+                      <div className={`${isMobile ? 'w-full h-56' : 'w-1/2 h-64'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
@@ -331,13 +333,14 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="estoque" className="mt-6 mb-16">
+              <TabsContent value="estoque" className="mt-6 mb-8">
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle>Estoque vs. Vendas</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className={`${isMobile ? 'h-60' : 'h-72'} mt-2`}>
+                    {/* Reduced chart height */}
+                    <div className={`${isMobile ? 'h-56' : 'h-64'}`}>
                       <ChartContainer
                         config={{
                           estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
@@ -349,7 +352,7 @@ const Reports = () => {
                           <XAxis dataKey="month" />
                           <YAxis />
                           <Tooltip />
-                          <Legend wrapperStyle={{ paddingTop: 10, marginBottom: -10 }} />
+                          <Legend wrapperStyle={{ marginBottom: -5, paddingTop: 5 }} />
                           <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                           <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
                         </BarChart>
@@ -360,7 +363,8 @@ const Reports = () => {
               </TabsContent>
             </Tabs>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            {/* Added additional margin at top to increase space between charts and cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 mb-10">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
