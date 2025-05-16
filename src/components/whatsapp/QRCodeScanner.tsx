@@ -73,12 +73,50 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
           </div>
         ) : (
           !qrExpired ? (
-            /* Use a standard QR code format that WhatsApp can recognize */
-            <img 
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=whatsapp://link?code=DEMO1234567890" 
-              alt="WhatsApp QR Code"
-              className="w-full h-full object-contain"
-            />
+            /* Using an SVG QR code similar to what WhatsApp Web actually uses */
+            <div className="w-full h-full flex items-center justify-center">
+              <svg 
+                width="200" 
+                height="200" 
+                viewBox="0 0 256 256" 
+                className="w-full h-full" 
+                style={{ backgroundColor: 'white' }}
+              >
+                {/* WhatsApp Web-like QR code pattern */}
+                <rect x="0" y="0" width="256" height="256" fill="white" />
+                <path d="M32,32 L96,32 L96,96 L32,96 Z" fill="black" />
+                <path d="M32,36 L92,36 L92,92 L36,92 L36,36 Z" fill="white" />
+                <path d="M42,42 L86,42 L86,86 L42,86 Z" fill="black" />
+                
+                <path d="M160,32 L224,32 L224,96 L160,96 Z" fill="black" />
+                <path d="M160,36 L220,36 L220,92 L160,92 Z" fill="white" />
+                <path d="M166,42 L214,42 L214,86 L166,86 Z" fill="black" />
+                
+                <path d="M32,160 L96,160 L96,224 L32,224 Z" fill="black" />
+                <path d="M32,164 L92,164 L92,220 L36,220 L36,164 Z" fill="white" />
+                <path d="M42,170 L86,170 L86,214 L42,214 Z" fill="black" />
+                
+                {/* WhatsApp logo in center */}
+                <circle cx="128" cy="128" r="18" fill="#25D366" />
+                <path d="M136,124 A12,12 0 1,0 120,132 L122,138 L128,136 A12,12 0 0,0 136,124 Z" fill="white" />
+                
+                {/* Random data patterns */}
+                <rect x="112" y="32" width="8" height="8" fill="black" />
+                <rect x="128" y="32" width="8" height="8" fill="black" />
+                <rect x="128" y="48" width="8" height="8" fill="black" />
+                <rect x="112" y="64" width="8" height="8" fill="black" />
+                <rect x="144" y="64" width="8" height="8" fill="black" />
+                <rect x="32" y="112" width="8" height="8" fill="black" />
+                <rect x="48" y="128" width="8" height="8" fill="black" />
+                <rect x="64" y="112" width="8" height="8" fill="black" />
+                <rect x="176" y="112" width="8" height="8" fill="black" />
+                <rect x="192" y="128" width="8" height="8" fill="black" />
+                <rect x="208" y="144" width="8" height="8" fill="black" />
+                <rect x="112" y="176" width="8" height="8" fill="black" />
+                <rect x="128" y="192" width="8" height="8" fill="black" />
+                <rect x="144" y="208" width="8" height="8" fill="black" />
+              </svg>
+            </div>
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
               <Timer className="h-10 w-10 mb-2" />
