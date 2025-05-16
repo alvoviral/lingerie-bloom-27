@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ChatMessage, Customer, ConnectionStatus, MessageType } from "./types";
+import { ChatMessage, Customer, ConnectionState, MessageType } from "./types";
 import ChatInterface from "./ChatInterface";
 import { toast } from "sonner";
 
@@ -64,10 +64,10 @@ interface ChatDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customer: Customer | null;
-  connectionStatus: ConnectionStatus;
+  connectionState: ConnectionState;
 }
 
-const ChatDialog = ({ open, onOpenChange, customer, connectionStatus }: ChatDialogProps) => {
+const ChatDialog = ({ open, onOpenChange, customer, connectionState }: ChatDialogProps) => {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   
   // Initialize chat history when customer changes
@@ -80,7 +80,7 @@ const ChatDialog = ({ open, onOpenChange, customer, connectionStatus }: ChatDial
   }, [customer]);
   
   const handleSendMessage = (content: string, type: MessageType) => {
-    if (connectionStatus !== "connected") {
+    if (connectionState.status !== "connected") {
       toast.error("É necessário conectar o WhatsApp para enviar mensagens");
       return;
     }
@@ -127,7 +127,7 @@ const ChatDialog = ({ open, onOpenChange, customer, connectionStatus }: ChatDial
           <ChatInterface
             customer={customer}
             chat={chat}
-            connectionStatus={connectionStatus}
+            connectionState={connectionState}
             onSendMessage={handleSendMessage}
           />
         </div>

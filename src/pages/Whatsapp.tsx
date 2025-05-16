@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import {
@@ -19,15 +18,24 @@ import ContactsTab from "@/components/whatsapp/ContactsTab";
 import AutomationTab from "@/components/whatsapp/AutomationTab";
 
 // Import types
-import { ConnectionStatus, WhatsAppMessage, Customer } from "@/components/whatsapp/types";
+import { ConnectionState, ConnectionStatus, ConnectionError, WhatsAppMessage, Customer } from "@/components/whatsapp/types";
 
 const Whatsapp = () => {
   useEffect(() => {
     document.title = "WhatsApp | BelleCharm";
   }, []);
 
-  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("disconnected");
+  const [connectionState, setConnectionState] = useState<ConnectionState>({
+    status: "disconnected",
+    reconnectAttempts: 0,
+    maxReconnectAttempts: 3
+  });
+  
   const [showQrCode, setShowQrCode] = useState(false);
+  
+  // Keep track of connection timeout
+  const connectionTimeoutRef = useRef<number>();
+  const pingIntervalRef = useRef<number>();
   
   const [messages, setMessages] = useState<WhatsAppMessage[]>([
     {
@@ -69,57 +77,169 @@ const Whatsapp = () => {
     { id: "5", name: "Luiza Mendes", phoneNumber: "+5511943210987", lastPurchase: "2025-05-12", tags: ["Fiel"] }
   ]);
   
-  const handleConnect = () => {
-    if (connectionStatus === "connected") {
+  // Cleanup intervals and timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      if (connectionTimeoutRef.current) {
+        clearTimeout(connectionTimeoutRef.current);
+      }
+      if (pingIntervalRef.current) {
+        clearInterval(pingIntervalRef.current);
+      }
+    };
+  }, []);
+  
+  // Set up ping interval when connected to detect connection issues
+  useEffect(() => {
+    if (connectionState.status === "connected") {
+      pingIntervalRef.current = window.setInterval(() => {
+        // Simulate random connection loss (1% chance every 30 seconds)
+        if (Math.random() < 0.01) {
+          handleConnectionError("network_error");
+        }
+      }, 30000);
+      
+      return () => {
+        if (pingIntervalRef.current) {
+          clearInterval(pingIntervalRef.current);
+        }
+      };
+    }
+  }, [connectionState.status]);
+  
+  // Handle connection errors
+  const handleConnectionError = useCallback((error: ConnectionError) => {
+    toast.error("Erro na conexão com WhatsApp");
+    
+    setConnectionState(prev => ({
+      ...prev,
+      status: "error",
+      error: error,
+      lastAttempt: new Date()
+    }));
+  }, []);
+  
+  // Attempt reconnection
+  const handleReconnect = useCallback(() => {
+    if (connectionState.reconnectAttempts >= connectionState.maxReconnectAttempts) {
+      toast.error("Número máximo de tentativas excedido. Tente conectar manualmente.");
+      setConnectionState(prev => ({
+        ...prev,
+        status: "disconnected",
+        reconnectAttempts: 0
+      }));
+      return;
+    }
+    
+    toast.info("Tentando reconectar...");
+    
+    setConnectionState(prev => ({
+      ...prev,
+      status: "reconnecting",
+      reconnectAttempts: prev.reconnectAttempts + 1
+    }));
+    
+    // Simulate reconnection attempt
+    setTimeout(() => {
+      // 60% chance of successful reconnection for demo
+      if (Math.random() < 0.6) {
+        setConnectionState(prev => ({
+          ...prev,
+          status: "connected",
+          error: undefined
+        }));
+        toast.success("Reconectado com sucesso!");
+      } else {
+        handleConnectionError("network_error");
+      }
+    }, 3000);
+  }, [connectionState.reconnectAttempts, connectionState.maxReconnectAttempts, handleConnectionError]);
+  
+  const handleConnect = useCallback(() => {
+    if (connectionState.status === "connected") {
       // Disconnect
-      setConnectionStatus("disconnected");
+      if (pingIntervalRef.current) {
+        clearInterval(pingIntervalRef.current);
+      }
+      setConnectionState({
+        status: "disconnected",
+        reconnectAttempts: 0,
+        maxReconnectAttempts: 3
+      });
       toast.success("WhatsApp desconectado com sucesso!");
       return;
     }
     
     // Connect
-    setConnectionStatus("connecting");
+    setConnectionState(prev => ({
+      ...prev,
+      status: "connecting"
+    }));
     setShowQrCode(true);
-  };
+    
+    // Set a timeout for the connection attempt
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+    }
+    
+    connectionTimeoutRef.current = window.setTimeout(() => {
+      if (connectionState.status === "connecting") {
+        handleConnectionError("timeout");
+        setShowQrCode(false);
+      }
+    }, 60000); // 60 seconds timeout
+  }, [connectionState.status, handleConnectionError]);
   
-  const handleScanComplete = () => {
+  const handleScanComplete = useCallback(() => {
+    // Clear the connection timeout
+    if (connectionTimeoutRef.current) {
+      clearTimeout(connectionTimeoutRef.current);
+    }
+    
     // Simulating connection success after QR scan
     setTimeout(() => {
-      setConnectionStatus("connected");
+      setConnectionState({
+        status: "connected",
+        reconnectAttempts: 0,
+        maxReconnectAttempts: 3
+      });
       setShowQrCode(false);
       toast.success("WhatsApp conectado com sucesso!");
     }, 2000);
-  };
+  }, []);
   
-  const handleRefreshQrCode = () => {
+  const handleRefreshQrCode = useCallback(() => {
     toast.info("Gerando novo QR code...");
     // Simulate QR code refresh
     setTimeout(() => {
       toast.success("Novo QR code gerado!");
     }, 1500);
-  };
+  }, []);
 
-  const handleSendMessage = (
-    newMessageData: Omit<WhatsAppMessage, "id" | "receivers" | "status">, 
-    recipients: string[]
-  ) => {
-    const newWhatsAppMessage: WhatsAppMessage = {
-      id: `${Date.now()}`,
-      content: newMessageData.content,
-      type: newMessageData.type,
-      receivers: recipients.length,
-      status: newMessageData.scheduledDate && newMessageData.scheduledDate > new Date() ? "Agendada" : "Enviada",
-      scheduledDate: newMessageData.scheduledDate
-    };
+  const handleSendMessage = useCallback(
+    (
+      newMessageData: Omit<WhatsAppMessage, "id" | "receivers" | "status">, 
+      recipients: string[]
+    ) => {
+      const newWhatsAppMessage: WhatsAppMessage = {
+        id: `${Date.now()}`,
+        content: newMessageData.content,
+        type: newMessageData.type,
+        receivers: recipients.length,
+        status: newMessageData.scheduledDate && newMessageData.scheduledDate > new Date() ? "Agendada" : "Enviada",
+        scheduledDate: newMessageData.scheduledDate
+      };
 
-    setMessages([newWhatsAppMessage, ...messages]);
+      setMessages([newWhatsAppMessage, ...messages]);
 
-    toast.success(
-      newMessageData.scheduledDate && newMessageData.scheduledDate > new Date()
-        ? "Mensagem agendada com sucesso!"
-        : "Mensagem enviada com sucesso!"
-    );
-  };
+      toast.success(
+        newMessageData.scheduledDate && newMessageData.scheduledDate > new Date()
+          ? "Mensagem agendada com sucesso!"
+          : "Mensagem enviada com sucesso!"
+      );
+    },
+    [messages]
+  );
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -134,7 +254,7 @@ const Whatsapp = () => {
           
           <div className="mt-8">
             {/* QR Code Dialog */}
-            <Dialog open={showQrCode && connectionStatus === "connecting"} onOpenChange={setShowQrCode}>
+            <Dialog open={showQrCode && connectionState.status === "connecting"} onOpenChange={setShowQrCode}>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle>Conectar ao WhatsApp</DialogTitle>
@@ -143,7 +263,7 @@ const Whatsapp = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <QRCodeScanner 
-                  connectionStatus={connectionStatus} 
+                  connectionState={connectionState} 
                   onRefresh={handleRefreshQrCode} 
                   onScanComplete={handleScanComplete} 
                 />
@@ -152,8 +272,9 @@ const Whatsapp = () => {
             
             {/* Connection Status Banner */}
             <ConnectionBanner 
-              connectionStatus={connectionStatus} 
-              onConnect={handleConnect} 
+              connectionState={connectionState} 
+              onConnect={handleConnect}
+              onReconnect={handleReconnect}
             />
             
             <Tabs defaultValue="messages" className="w-full">
@@ -167,7 +288,7 @@ const Whatsapp = () => {
                 <MessagesTab 
                   messages={messages}
                   customers={customers}
-                  connectionStatus={connectionStatus}
+                  connectionState={connectionState}
                   onSendMessage={handleSendMessage}
                 />
               </TabsContent>
@@ -175,12 +296,12 @@ const Whatsapp = () => {
               <TabsContent value="contacts" className="mt-0">
                 <ContactsTab 
                   customers={customers}
-                  connectionStatus={connectionStatus}
+                  connectionState={connectionState}
                 />
               </TabsContent>
               
               <TabsContent value="automation" className="mt-0">
-                <AutomationTab connectionStatus={connectionStatus} />
+                <AutomationTab connectionState={connectionState} />
               </TabsContent>
             </Tabs>
           </div>
