@@ -1,7 +1,9 @@
+
 import { Loader2, RefreshCw, Check, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConnectionState } from "./types";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 interface QRCodeScannerProps {
   connectionState: ConnectionState;
@@ -10,10 +12,11 @@ interface QRCodeScannerProps {
 }
 
 const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeScannerProps) => {
-  const [qrExpiration, setQrExpiration] = useState(60); // QR code expires in 60 seconds
+  const [qrExpiration, setQrExpiration] = useState(60);
   const [qrExpired, setQrExpired] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   
   // Handle QR code expiration countdown
   useEffect(() => {
@@ -27,6 +30,7 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
     
     if (qrExpiration === 0) {
       setQrExpired(true);
+      setApiError("QR Code expirado. Por favor, atualize para gerar um novo código.");
     }
     
     return () => {
@@ -34,44 +38,61 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
     };
   }, [qrExpiration, connectionState.status, qrExpired]);
 
-  // Fetch real QR code or simulate the loading
-  useEffect(() => {
-    const fetchQRCode = async () => {
-      setIsLoading(true);
-      
-      try {
-        // In a real implementation, this would be an API call to your WhatsApp Business API provider
-        // For example: const response = await fetch('https://your-whatsapp-api.com/generate-qr', { headers: {...} });
-        
-        // Simulate API call for now
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // This would be the actual QR code data from the WhatsApp API
-        setQrCodeData('https://wa.me/qr/SAMPLE_WHATSAPP_QRCODE_DATA');
-        
-      } catch (error) {
-        console.error("Failed to fetch WhatsApp QR code:", error);
-        setQrExpired(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Função para buscar QR code da WhatsApp Business API
+  const fetchWhatsAppQRCode = async () => {
+    setIsLoading(true);
+    setApiError(null);
     
-    fetchQRCode();
+    try {
+      // Esta é a parte onde você deve integrar com sua API WhatsApp Business
+      // Exemplo de como seria a chamada real:
+      /*
+      const response = await fetch('https://sua-api-whatsapp.com/qrcode', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer SEU_TOKEN_AQUI',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          // Parâmetros necessários para sua API
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Erro ao gerar QR Code: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setQrData(data.qrCodeData);
+      */
+      
+      // Para fins de demonstração, simulamos a resposta da API
+      // IMPORTANTE: Substitua este código pela chamada real à sua API
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log("Em uma implementação real, aqui receberíamos o QR Code da API WhatsApp Business");
+      // Este é um QR code de exemplo, substitua pelo real da sua API
+      setQrData("https://api.qrserver.com/v1/create-qr-code/?data=WhatsAppDemo&size=200x200&color=45-157-95&bgcolor=255-255-255");
+      
+    } catch (error) {
+      console.error("Erro ao buscar QR Code:", error);
+      setApiError("Falha ao conectar com a API WhatsApp Business. Tente novamente.");
+      toast.error("Erro ao gerar QR Code do WhatsApp");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Busca o QR Code quando o componente é montado
+  useEffect(() => {
+    fetchWhatsAppQRCode();
   }, []);
 
-  // Reset expiration and fetch new QR code on refresh
+  // Função para atualizar o QR Code
   const handleRefresh = () => {
     setQrExpiration(60);
     setQrExpired(false);
-    setIsLoading(true);
-    
-    // In real implementation, this would fetch a fresh QR code
-    setTimeout(() => {
-      setQrCodeData('https://wa.me/qr/REFRESHED_WHATSAPP_QRCODE_DATA');
-      setIsLoading(false);
-    }, 1500);
-    
+    fetchWhatsAppQRCode();
     onRefresh();
   };
 
@@ -83,32 +104,50 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
         Expira em {qrExpiration}s
       </div>
       
-      {/* Realistic WhatsApp QR Code display */}
+      {/* WhatsApp QR Code display */}
       <div className="bg-white p-4 rounded-lg shadow-sm border mb-4 relative w-64 h-64 flex items-center justify-center">
         {isLoading ? (
           <div className="w-full h-full flex items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-green-500" />
           </div>
+        ) : apiError ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-red-500 text-center p-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <p className="mt-4 text-sm">{apiError}</p>
+          </div>
+        ) : qrExpired ? (
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
+            <Timer className="h-10 w-10 mb-2" />
+            <p className="text-sm font-medium">QR Code expirado</p>
+          </div>
+        ) : qrData ? (
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* Logo WhatsApp */}
+            <div className="absolute top-0 left-0 w-full flex justify-center">
+              <div className="bg-green-500 text-white text-xs px-3 py-1 rounded-full mt-1">
+                WhatsApp Business
+              </div>
+            </div>
+            
+            {/* QR Code - Na implementação real, exibiria o QR gerado pela API */}
+            <img 
+              src={qrData} 
+              alt="WhatsApp QR Code"
+              className="w-full h-full p-2"
+            />
+            
+            <div className="absolute bottom-0 w-full text-center text-xs text-gray-500">
+              Escaneie para conectar
+            </div>
+          </div>
         ) : (
-          !qrExpired ? (
-            <div className="w-full h-full flex items-center justify-center">
-              {/* In a real implementation, this would be an actual <img> with src from WhatsApp API */}
-              {qrCodeData ? (
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrCodeData)}&size=200x200&bgcolor=255-255-255&color=45-157-95`}
-                  alt="WhatsApp QR Code"
-                  className="w-full h-full"
-                />
-              ) : (
-                <div className="text-red-500">Failed to generate QR code</div>
-              )}
-            </div>
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
-              <Timer className="h-10 w-10 mb-2" />
-              <p className="text-sm font-medium">QR Code expirado</p>
-            </div>
-          )
+          <div className="w-full h-full flex items-center justify-center text-red-500">
+            Falha ao gerar QR code
+          </div>
         )}
       </div>
       
@@ -128,15 +167,28 @@ const QRCodeScanner = ({ connectionState, onRefresh, onScanComplete }: QRCodeSca
           <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           {qrExpired ? "Gerar Novo QR Code" : "Atualizar QR Code"}
         </Button>
-        {/* Keep the simulation button for testing purposes only */}
-        <Button 
-          onClick={onScanComplete}
-          disabled={qrExpired || isLoading}
-          className="flex items-center justify-center"
-        >
-          <Check className="h-4 w-4 mr-2" />
-          Simular Conexão
-        </Button>
+        
+        {/* IMPORTANTE: Em produção, remover este botão. 
+            Ele serve apenas para testes durante o desenvolvimento */}
+        {process.env.NODE_ENV !== "production" && (
+          <Button 
+            onClick={onScanComplete}
+            disabled={qrExpired || isLoading}
+            className="flex items-center justify-center"
+          >
+            <Check className="h-4 w-4 mr-2" />
+            Simular Conexão
+          </Button>
+        )}
+      </div>
+      
+      <div className="mt-4 text-xs text-gray-500 max-w-md text-center">
+        <p>Para configurar a integração real, você precisará:</p>
+        <ul className="list-disc pl-5 mt-2 text-left">
+          <li>Conta WhatsApp Business API</li>
+          <li>Credenciais de API configuradas</li>
+          <li>Implementação do webhook para receber eventos</li>
+        </ul>
       </div>
     </div>
   );
