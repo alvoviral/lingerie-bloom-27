@@ -18,13 +18,13 @@ export const MarketplaceChart = () => {
   const isMobile = useIsMobile();
   
   return (
-    <Card className="mb-24">
+    <Card className="mb-16">
       <CardHeader className="pb-0">
         <CardTitle>Vendas por Marketplace</CardTitle>
       </CardHeader>
-      <CardContent className="pb-8">
+      <CardContent className="pb-4">
         <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
-          <div className={`${isMobile ? 'w-full h-48' : 'w-1/2 h-64'}`}>
+          <div className={`${isMobile ? 'w-full h-40' : 'w-1/2 h-52'}`}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart
                 margin={{
