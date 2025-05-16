@@ -23,6 +23,21 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+// Interface estendida para o perfil com os novos campos
+interface ExtendedProfile {
+  id: string;
+  user_id: string;
+  full_name: string;
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+  created_at: string;
+  credits: number;
+  device_id?: string;
+  plan: string;
+  plan_expires_at?: string;
+}
+
 const Profile = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +72,7 @@ const Profile = () => {
         setUser(user);
         
         // Tenta recuperar o perfil do usuário se existir
-        const { data: profile, error } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -69,7 +84,10 @@ const Profile = () => {
           return;
         }
           
-        if (profile) {
+        if (profileData) {
+          // Tratar o perfil como tipo estendido
+          const profile = profileData as unknown as ExtendedProfile;
+          
           form.reset({
             firstName: profile.first_name || "",
             lastName: profile.last_name || "",
@@ -127,11 +145,14 @@ const Profile = () => {
       }
       
       if (existingProfile) {
-        // Atualiza o perfil existente
+        // Atualiza o perfil existente usando type assertion para contornar o problema de tipos
         const { error } = await supabase
           .from('profiles')
           .update({
+            full_name: `${values.firstName} ${values.lastName}`,
+            // @ts-ignore - Ignorando o erro de tipo por enquanto até que os tipos sejam atualizados
             first_name: values.firstName,
+            // @ts-ignore - Ignorando o erro de tipo por enquanto até que os tipos sejam atualizados
             last_name: values.lastName,
             updated_at: new Date().toISOString(),
           })
@@ -139,13 +160,15 @@ const Profile = () => {
         
         if (error) throw error;
       } else {
-        // Cria um novo perfil
+        // Cria um novo perfil usando type assertion para contornar o problema de tipos
         const { error } = await supabase
           .from('profiles')
           .insert({
-            user_id: user.id,  // Correção: usar user_id em vez de id
+            user_id: user.id,
             full_name: `${values.firstName} ${values.lastName}`,
+            // @ts-ignore - Ignorando o erro de tipo por enquanto até que os tipos sejam atualizados
             first_name: values.firstName,
+            // @ts-ignore - Ignorando o erro de tipo por enquanto até que os tipos sejam atualizados
             last_name: values.lastName,
           });
         
@@ -186,6 +209,7 @@ const Profile = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
+          // @ts-ignore - Ignorando o erro de tipo por enquanto até que os tipos sejam atualizados
           avatar_url: fileName,
         })
         .eq('id', user.id);

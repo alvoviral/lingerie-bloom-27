@@ -42,8 +42,11 @@ export const UserAvatar = ({ userId, fallbackInitials = "UR", className = "" }: 
 
         if (profile) {
           // Definir iniciais com base no nome e sobrenome
-          if (profile.first_name && profile.last_name) {
-            setInitials(`${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase());
+          // Tratando profile como um objeto genérico para acessar as propriedades adicionadas
+          const profileAny = profile as any;
+          
+          if (profileAny.first_name && profileAny.last_name) {
+            setInitials(`${profileAny.first_name[0]}${profileAny.last_name[0]}`.toUpperCase());
           } else if (profile.full_name) {
             // Fallback para o nome completo se first_name ou last_name não estiverem presentes
             const nameParts = profile.full_name.split(' ');
@@ -55,10 +58,10 @@ export const UserAvatar = ({ userId, fallbackInitials = "UR", className = "" }: 
           }
 
           // Buscar URL do avatar se existir
-          if (profile.avatar_url) {
+          if (profileAny.avatar_url) {
             const { data } = await supabase.storage
               .from('avatars')
-              .getPublicUrl(profile.avatar_url);
+              .getPublicUrl(profileAny.avatar_url);
             
             if (data) {
               setAvatarUrl(data.publicUrl);
