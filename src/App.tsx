@@ -1,48 +1,44 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Dashboard from "./pages/Dashboard";
-import Inventory from "./pages/Inventory";
-import Finance from "./pages/Finance";
-import Sales from "./pages/Sales";
-import Customers from "./pages/Customers";
-import Whatsapp from "./pages/Whatsapp";
-import Marketplaces from "./pages/Marketplaces";
-import Calendar from "./pages/Calendar";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from "sonner";
+import Dashboard from './pages/Dashboard';
+import Reports from './pages/Reports';
+import Calendar from './pages/Calendar';
+import Customers from './pages/Customers';
+import Inventory from './pages/Inventory';
+import Sales from './pages/Sales';
+import Finance from './pages/Finance';
+import Marketplaces from './pages/Marketplaces';
+import Whatsapp from './pages/Whatsapp';
+import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import { NotificationProvider } from "./contexts/NotificationContext";
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/estoque" element={<Inventory />} />
-          <Route path="/dashboard/financas" element={<Finance />} />
-          <Route path="/dashboard/vendas" element={<Sales />} />
-          <Route path="/dashboard/clientes" element={<Customers />} />
-          <Route path="/dashboard/whatsapp" element={<Whatsapp />} />
-          <Route path="/dashboard/marketplaces" element={<Marketplaces />} />
-          <Route path="/dashboard/agenda" element={<Calendar />} />
-          <Route path="/dashboard/relatorios" element={<Reports />} />
-          <Route path="/dashboard/configuracoes" element={<Settings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <NotificationProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/relatorios" element={<Reports />} />
+            <Route path="/agenda" element={<Calendar />} />
+            <Route path="/clientes" element={<Customers />} />
+            <Route path="/inventario" element={<Inventory />} />
+            <Route path="/vendas" element={<Sales />} />
+            <Route path="/financeiro" element={<Finance />} />
+            <Route path="/marketplaces" element={<Marketplaces />} />
+            <Route path="/whatsapp" element={<Whatsapp />} />
+            <Route path="/configuracoes" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Toaster position="top-right" />
+        </Router>
+      </NotificationProvider>
+    </ThemeProvider>
+  );
+}
 
 export default App;
