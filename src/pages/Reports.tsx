@@ -30,6 +30,7 @@ import {
   TrendingUp,
   Clock
 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Reset all sample data for reports
 const salesData = [
@@ -82,6 +83,7 @@ const COLORS = ['#ec4899', '#8b5cf6', '#0ea5e9', '#10b981', '#f59e0b'];
 
 const Reports = () => {
   const [timeframe, setTimeframe] = useState<string>("anual");
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     document.title = "Relatórios | BelleCharm";
@@ -92,13 +94,13 @@ const Reports = () => {
       <Sidebar className="hidden md:block w-64 flex-shrink-0" />
       
       <div className="flex-1 overflow-auto">
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8 pb-20">
           <Header 
             title="Relatórios" 
             subtitle="Analise dados e métricas do seu negócio." 
           />
           
-          <div className="mt-8 space-y-6">
+          <div className="mt-8 space-y-8">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-medium">Visão Geral do Negócio</h3>
               <div className="flex items-center">
@@ -153,84 +155,86 @@ const Reports = () => {
             </div>
             
             <Tabs defaultValue="vendas" className="mt-8">
-              <TabsList>
+              <TabsList className="flex overflow-x-auto pb-1 mb-1 md:pb-0 md:mb-0">
                 <TabsTrigger value="vendas">Vendas</TabsTrigger>
                 <TabsTrigger value="categorias">Categorias</TabsTrigger>
                 <TabsTrigger value="marketplaces">Marketplaces</TabsTrigger>
                 <TabsTrigger value="estoque">Estoque</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="vendas" className="mt-4 pb-8 mb-10">
+              <TabsContent value="vendas" className="mt-6 mb-16">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="pb-2">
                     <CardTitle>Gráfico de Vendas</CardTitle>
                   </CardHeader>
-                  <CardContent className="h-80">
-                    <ChartContainer
-                      config={{
-                        sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
-                        tooltip: { theme: { light: "#ec4899", dark: "#ec4899" } },
-                      }}
-                    >
-                      <LineChart data={salesData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="month" />
-                        <YAxis 
-                          tickFormatter={(value) => `R$ ${value.toLocaleString()}`} 
-                        />
-                        <Tooltip 
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Mês
-                                      </span>
-                                      <span className="font-bold text-foreground">
-                                        {payload[0].payload.month}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Valor
-                                      </span>
-                                      <span className="font-bold text-foreground">
-                                        R$ {payload[0].value?.toLocaleString()}
-                                      </span>
+                  <CardContent>
+                    <div className={`${isMobile ? 'h-60' : 'h-72'} mt-2`}>
+                      <ChartContainer
+                        config={{
+                          sales: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
+                          tooltip: { theme: { light: "#ec4899", dark: "#ec4899" } },
+                        }}
+                      >
+                        <LineChart data={salesData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis dataKey="month" />
+                          <YAxis 
+                            tickFormatter={(value) => `R$ ${value.toLocaleString()}`} 
+                          />
+                          <Tooltip 
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                return (
+                                  <div className="rounded-lg border bg-background p-2 shadow-sm">
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div className="flex flex-col">
+                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                          Mês
+                                        </span>
+                                        <span className="font-bold text-foreground">
+                                          {payload[0].payload.month}
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className="text-[0.70rem] uppercase text-muted-foreground">
+                                          Valor
+                                        </span>
+                                        <span className="font-bold text-foreground">
+                                          R$ {payload[0].value?.toLocaleString()}
+                                        </span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Legend />
-                        <Line
-                          type="monotone"
-                          dataKey="value"
-                          name="Vendas (R$)"
-                          stroke="#ec4899"
-                          strokeWidth={2}
-                          dot={{ r: 4, strokeWidth: 2 }}
-                          activeDot={{ r: 6, stroke: "#ec4899", strokeWidth: 2 }}
-                        />
-                      </LineChart>
-                    </ChartContainer>
+                                );
+                              }
+                              return null;
+                            }}
+                          />
+                          <Legend wrapperStyle={{ paddingTop: 10, marginBottom: -10 }} />
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            name="Vendas (R$)"
+                            stroke="#ec4899"
+                            strokeWidth={2}
+                            dot={{ r: 4, strokeWidth: 2 }}
+                            activeDot={{ r: 6, stroke: "#ec4899", strokeWidth: 2 }}
+                          />
+                        </LineChart>
+                      </ChartContainer>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
               
-              <TabsContent value="categorias" className="mt-4 pb-8 mb-10">
+              <TabsContent value="categorias" className="mt-6 mb-16">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="pb-2">
                     <CardTitle>Vendas por Categoria</CardTitle>
                   </CardHeader>
-                  <CardContent className="h-80">
-                    <div className="flex items-center h-full">
-                      <div className="w-1/2 h-full">
+                  <CardContent>
+                    <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
+                      <div className={`${isMobile ? 'w-full h-60' : 'w-1/2 h-72'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
@@ -238,7 +242,7 @@ const Reports = () => {
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              outerRadius={80}
+                              outerRadius={isMobile ? 70 : 80}
                               fill="#8884d8"
                               dataKey="value"
                               label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -253,7 +257,7 @@ const Reports = () => {
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="w-1/2">
+                      <div className={`${isMobile ? 'w-full mt-4' : 'w-1/2'}`}>
                         <h4 className="text-sm font-medium mb-4">Distribuição por categorias</h4>
                         <div className="space-y-2">
                           {categoryData.map((item, index) => (
@@ -275,14 +279,14 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="marketplaces" className="mt-4 pb-8 mb-10">
+              <TabsContent value="marketplaces" className="mt-6 mb-16">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="pb-2">
                     <CardTitle>Vendas por Marketplace</CardTitle>
                   </CardHeader>
-                  <CardContent className="h-80">
-                    <div className="flex items-center h-full">
-                      <div className="w-1/2 h-full">
+                  <CardContent>
+                    <div className={`${isMobile ? 'block' : 'flex'} items-center`}>
+                      <div className={`${isMobile ? 'w-full h-60' : 'w-1/2 h-72'}`}>
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
                             <Pie
@@ -290,7 +294,7 @@ const Reports = () => {
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              outerRadius={80}
+                              outerRadius={isMobile ? 70 : 80}
                               fill="#8884d8"
                               dataKey="value"
                               label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
@@ -305,7 +309,7 @@ const Reports = () => {
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
-                      <div className="w-1/2">
+                      <div className={`${isMobile ? 'w-full mt-4' : 'w-1/2'}`}>
                         <h4 className="text-sm font-medium mb-4">Distribuição por canais de venda</h4>
                         <div className="space-y-2">
                           {marketplaceData.map((item, index) => (
@@ -327,28 +331,30 @@ const Reports = () => {
                 </Card>
               </TabsContent>
               
-              <TabsContent value="estoque" className="mt-4 pb-8 mb-10">
+              <TabsContent value="estoque" className="mt-6 mb-16">
                 <Card>
-                  <CardHeader>
+                  <CardHeader className="pb-2">
                     <CardTitle>Estoque vs. Vendas</CardTitle>
                   </CardHeader>
-                  <CardContent className="h-80">
-                    <ChartContainer
-                      config={{
-                        estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
-                        vendas: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
-                      }}
-                    >
-                      <BarChart data={inventoryData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
-                        <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ChartContainer>
+                  <CardContent>
+                    <div className={`${isMobile ? 'h-60' : 'h-72'} mt-2`}>
+                      <ChartContainer
+                        config={{
+                          estoque: { label: "Estoque", theme: { light: "#8b5cf6", dark: "#8b5cf6" } },
+                          vendas: { label: "Vendas", theme: { light: "#ec4899", dark: "#ec4899" } },
+                        }}
+                      >
+                        <BarChart data={inventoryData}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend wrapperStyle={{ paddingTop: 10, marginBottom: -10 }} />
+                          <Bar dataKey="estoque" name="Estoque (un)" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="vendas" name="Vendas (un)" fill="#ec4899" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ChartContainer>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

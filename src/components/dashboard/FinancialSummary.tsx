@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const data = [
   { name: 'Jan', receita: 0, despesas: 0 },
@@ -13,13 +14,15 @@ const data = [
 ];
 
 const FinancialSummary = () => {
+  const isMobile = useIsMobile();
+  
   return (
     <Card className="hover-card">
       <CardHeader className="pb-0">
         <CardTitle className="text-lg font-medium">Resumo Financeiro</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[240px] mt-4">
+        <div className={`${isMobile ? 'h-[200px]' : 'h-[220px]'} mt-4`}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
@@ -27,7 +30,7 @@ const FinancialSummary = () => {
                 top: 10,
                 right: 10,
                 left: 0,
-                bottom: 0,
+                bottom: isMobile ? 0 : 10,
               }}
             >
               <defs>
@@ -71,7 +74,7 @@ const FinancialSummary = () => {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+        <div className="mt-6 grid grid-cols-2 gap-4 text-center">
           <div className="rounded-lg bg-lingerie-50 dark:bg-lingerie-900/20 p-2">
             <p className="text-xs text-muted-foreground">Receita Total</p>
             <p className="text-lg font-semibold font-playfair text-lingerie-600 dark:text-lingerie-300">
