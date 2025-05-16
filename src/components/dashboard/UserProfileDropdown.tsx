@@ -10,13 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import UserAvatar from "./UserAvatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const UserProfileDropdown = () => {
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { signOut } = useAuth();
 
   const handleProfileClick = () => {
     navigate('/dashboard/perfil');
@@ -29,9 +30,8 @@ export const UserProfileDropdown = () => {
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      await supabase.auth.signOut();
+      await signOut();
       toast.success("Logout realizado com sucesso");
-      navigate('/');
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
       toast.error("Erro ao fazer logout");

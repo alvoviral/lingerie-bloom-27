@@ -17,6 +17,8 @@ import NotFound from './pages/NotFound';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { CustomerProvider } from './contexts/CustomerContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'sonner';
 import Profile from './pages/Profile';
 
@@ -26,24 +28,73 @@ function App() {
       <ThemeProvider>
         <NotificationProvider>
           <CustomerProvider>
-            <Toaster />
             <Router>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/dashboard/vendas" element={<Sales />} />
-                <Route path="/dashboard/estoque" element={<Inventory />} />
-                <Route path="/dashboard/clientes" element={<Customers />} />
-                <Route path="/dashboard/financas" element={<Finance />} />
-                <Route path="/dashboard/marketplaces" element={<Marketplaces />} />
-                <Route path="/dashboard/agenda" element={<Calendar />} />
-                <Route path="/dashboard/whatsapp" element={<Whatsapp />} />
-                <Route path="/dashboard/relatorios" element={<Reports />} />
-                <Route path="/dashboard/configuracoes" element={<Settings />} />
-                <Route path="/dashboard/perfil" element={<Profile />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <AuthProvider>
+                <Toaster />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/login" element={<Login />} />
+                  
+                  {/* Protected Routes */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/vendas" element={
+                    <ProtectedRoute>
+                      <Sales />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/estoque" element={
+                    <ProtectedRoute>
+                      <Inventory />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/clientes" element={
+                    <ProtectedRoute>
+                      <Customers />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/financas" element={
+                    <ProtectedRoute>
+                      <Finance />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/marketplaces" element={
+                    <ProtectedRoute>
+                      <Marketplaces />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/agenda" element={
+                    <ProtectedRoute>
+                      <Calendar />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/whatsapp" element={
+                    <ProtectedRoute>
+                      <Whatsapp />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/relatorios" element={
+                    <ProtectedRoute>
+                      <Reports />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/configuracoes" element={
+                    <ProtectedRoute>
+                      <Settings />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/perfil" element={
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </AuthProvider>
             </Router>
           </CustomerProvider>
         </NotificationProvider>
