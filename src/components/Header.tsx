@@ -1,6 +1,7 @@
 
-import { Bell } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,34 +65,17 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
         {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
       </div>
       
-      <div className="flex items-center gap-4">
-        {/* User profile dropdown - highest z-index (30) */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
-              <Avatar>
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="z-30">
-            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="cursor-pointer text-red-500 focus:text-red-500" 
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-            >
-              {isLoggingOut ? "Saindo..." : "Sair"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex items-center space-x-6">
+        {/* Search bar */}
+        <div className="relative w-64">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Pesquisar..."
+            className="pl-8"
+          />
+        </div>
         
-        {/* Notifications dropdown - middle z-index (20) */}
+        {/* Notifications dropdown - z-index 20 */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="relative z-20">
@@ -161,6 +145,32 @@ const Header = ({ title, subtitle, className = "" }: HeaderProps) => {
                 </div>
               )}
             </ScrollArea>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* User profile dropdown - z-index 30 */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full z-30">
+              <Avatar>
+                <AvatarImage src="/placeholder.svg" />
+                <AvatarFallback className="bg-lingerie-200 text-lingerie-700">MR</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-30">
+            <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={handleProfileClick}>Perfil</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={handleSettingsClick}>Configurações</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              className="cursor-pointer text-red-500 focus:text-red-500" 
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? "Saindo..." : "Sair"}
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

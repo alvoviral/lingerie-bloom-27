@@ -26,6 +26,7 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-5">
             <Header 
               title="Dashboard" 
+              subtitle="Seja bem-vindo"
               className="border-none pb-0"
             />
             
