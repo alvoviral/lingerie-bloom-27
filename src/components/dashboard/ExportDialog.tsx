@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { exportData } from "@/utils/exportUtils";
+import { exportData, ExportFormat, ExportSection } from "@/utils/export";
 import { toast } from "sonner";
 import { Loader2, Download, File } from "lucide-react";
 
@@ -24,9 +23,6 @@ interface ExportDialogProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-type ExportFormat = 'pdf' | 'xlsx' | 'txt' | 'docx';
-type ExportSection = 'inventory' | 'finances' | 'sales' | 'customers' | 'whatsapp' | 'marketplaces' | 'calendar' | 'reports' | 'settings' | 'all';
 
 const ExportDialog = ({ isOpen, onClose }: ExportDialogProps) => {
   const [format, setFormat] = useState<ExportFormat>('pdf');
