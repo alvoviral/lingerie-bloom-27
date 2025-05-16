@@ -15,17 +15,37 @@ import { Product, NewProduct } from "@/types/inventory";
 import { MOCK_PRODUCTS, getProductStatus } from "@/utils/inventoryUtils";
 import { supabase } from "@/integrations/supabase/client";
 
+// Chave para armazenamento local
+const STORAGE_KEY = 'bellecharm_inventory';
+
 const Inventory = () => {
   useEffect(() => {
     document.title = "Estoque | BelleCharm";
   }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productIdToDelete, setProductIdToDelete] = useState<string | null>(null);
+
+  // Inicializar produtos do armazenamento local ou dos dados mock
+  useEffect(() => {
+    const savedProducts = localStorage.getItem(STORAGE_KEY);
+    if (savedProducts) {
+      setProducts(JSON.parse(savedProducts));
+    } else {
+      setProducts(MOCK_PRODUCTS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_PRODUCTS));
+    }
+  }, []);
+
+  // Função para salvar produtos no armazenamento local
+  const saveProducts = (updatedProducts: Product[]) => {
+    setProducts(updatedProducts);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProducts));
+  };
 
   const handleAddProduct = (newProductData: NewProduct) => {
     const productStatus = getProductStatus(newProductData.stock);
@@ -36,7 +56,8 @@ const Inventory = () => {
       status: productStatus
     };
     
-    setProducts([...products, productWithId]);
+    const updatedProducts = [...products, productWithId];
+    saveProducts(updatedProducts);
     toast.success("Produto adicionado com sucesso!");
   };
 
@@ -50,7 +71,8 @@ const Inventory = () => {
     const updatedStatus = getProductStatus(updatedProduct.stock);
     const finalProduct = { ...updatedProduct, status: updatedStatus };
 
-    setProducts(products.map(p => p.id === finalProduct.id ? finalProduct : p));
+    const updatedProducts = products.map(p => p.id === finalProduct.id ? finalProduct : p);
+    saveProducts(updatedProducts);
     setIsEditDialogOpen(false);
     toast.success("Produto atualizado com sucesso!");
   };
@@ -62,7 +84,8 @@ const Inventory = () => {
 
   const handleConfirmDelete = () => {
     if (productIdToDelete) {
-      setProducts(products.filter(p => p.id !== productIdToDelete));
+      const updatedProducts = products.filter(p => p.id !== productIdToDelete);
+      saveProducts(updatedProducts);
       setIsDeleteDialogOpen(false);
       setProductIdToDelete(null);
       toast.success("Produto excluído com sucesso!");

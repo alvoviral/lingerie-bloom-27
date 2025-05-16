@@ -25,6 +25,12 @@ const DeleteDialog = ({
   itemName,
   itemType = "cliente",
 }: DeleteDialogProps) => {
+  const handleConfirm = () => {
+    onConfirm();
+    // Garante que o modal será fechado após a confirmação
+    onClose();
+  };
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
@@ -36,7 +42,7 @@ const DeleteDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogAction onClick={handleConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Excluir
           </AlertDialogAction>
         </AlertDialogFooter>

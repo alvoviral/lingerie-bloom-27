@@ -1,8 +1,9 @@
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { Customer } from "@/types/customer";
 import { getInitialCustomers } from "@/utils/customerUtils";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type CustomerContextType = {
   customers: Customer[];
@@ -31,6 +32,9 @@ type CustomerContextType = {
 
 const CustomerContext = createContext<CustomerContextType | undefined>(undefined);
 
+// Chave para salvar dados no localStorage
+const STORAGE_KEY = 'bellecharm_customers';
+
 export const CustomerProvider = ({ children }: { children: ReactNode }) => {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -41,10 +45,23 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
 
-  // Initialize customer data
-  useState(() => {
-    setCustomers(getInitialCustomers());
-  });
+  // Initialize customer data from localStorage if available
+  useEffect(() => {
+    const savedCustomers = localStorage.getItem(STORAGE_KEY);
+    if (savedCustomers) {
+      setCustomers(JSON.parse(savedCustomers));
+    } else {
+      const initialCustomers = getInitialCustomers();
+      setCustomers(initialCustomers);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(initialCustomers));
+    }
+  }, []);
+
+  // Salva clientes no localStorage sempre que houver mudanças
+  const saveCustomers = (updatedCustomers: Customer[]) => {
+    setCustomers(updatedCustomers);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCustomers));
+  };
 
   // Filter customers based on search and segment filter
   const filteredCustomers = customers.filter(customer => {
@@ -56,7 +73,8 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const handleAddCustomer = (newCustomer: Customer) => {
-    setCustomers([...customers, newCustomer]);
+    const updatedCustomers = [...customers, newCustomer];
+    saveCustomers(updatedCustomers);
     setIsAddDialogOpen(false);
     toast.success("Cliente adicionado", {
       description: `${newCustomer.name} foi adicionado(a) com sucesso à sua base de clientes.`
@@ -68,7 +86,7 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
       customer.id === updatedCustomer.id ? updatedCustomer : customer
     );
     
-    setCustomers(updatedCustomers);
+    saveCustomers(updatedCustomers);
     setIsEditDialogOpen(false);
     toast.success("Cliente atualizado", {
       description: `Os dados de ${updatedCustomer.name} foram atualizados com sucesso.`
@@ -81,7 +99,7 @@ export const CustomerProvider = ({ children }: { children: ReactNode }) => {
     const updatedCustomers = customers.filter(customer => customer.id !== selectedCustomer.id);
     const customerName = selectedCustomer.name;
     
-    setCustomers(updatedCustomers);
+    saveCustomers(updatedCustomers);
     setIsDeleteDialogOpen(false);
     setSelectedCustomer(null);
     

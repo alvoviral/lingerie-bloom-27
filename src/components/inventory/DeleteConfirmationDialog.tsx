@@ -21,6 +21,12 @@ const DeleteConfirmationDialog = ({
   onClose,
   onConfirm,
 }: DeleteConfirmationDialogProps) => {
+  const handleConfirm = () => {
+    onConfirm();
+    // Garante que o modal será fechado após a confirmação
+    onClose();
+  };
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
@@ -32,7 +38,7 @@ const DeleteConfirmationDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Excluir</AlertDialogAction>
+          <AlertDialogAction onClick={handleConfirm}>Excluir</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
