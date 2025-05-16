@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -43,8 +42,7 @@ const CustomerForm = ({ onSubmit, onCancel }: CustomerFormProps) => {
 
     onSubmit(newCustomer);
     form.reset();
-    toast({
-      title: "Cliente adicionado",
+    toast.success("Cliente adicionado", {
       description: `${data.name} foi adicionado(a) com sucesso à sua base de clientes.`
     });
   };
