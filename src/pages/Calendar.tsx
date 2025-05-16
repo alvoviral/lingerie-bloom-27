@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { pt } from "date-fns/locale";
 import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";

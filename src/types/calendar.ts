@@ -8,6 +8,7 @@ export type Appointment = {
   notes?: string;
 };
 
+// Export AppointmentFormValues directly from the type definition
 export type AppointmentFormValues = {
   title: string;
   client: string;
