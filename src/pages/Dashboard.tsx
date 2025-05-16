@@ -23,7 +23,7 @@ const Dashboard = () => {
       <Sidebar className="hidden md:block w-64 flex-shrink-0" />
       
       <div className="flex-1 overflow-auto">
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8 pt-20 md:pt-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-5">
             <Header 
               title="Dashboard" 
